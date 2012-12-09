@@ -23,6 +23,8 @@ public class Planet implements Serializable {
 	private static int BOTTOM = 0;
 	
 	private boolean containsRobot = false;
+	private boolean scanned;
+	private boolean colonized;
 
 	private GameModel model;
 	
@@ -37,6 +39,8 @@ public class Planet implements Serializable {
 		this.model = model;
 		this.name = name;
 		this.homePlanet = homePlanet;
+		scanned = homePlanet;
+		colonized = homePlanet;
 		BOTTOM = bottom;
 		holes = new ArrayList<Rectangle>();
 		elements = new ArrayList<Element>();
@@ -58,6 +62,26 @@ public class Planet implements Serializable {
 
 	public String getName() {
 		return name;
+	}
+
+	public boolean isContainsRobot() {
+		return containsRobot;
+	}
+
+	public boolean isScanned() {
+		return scanned;
+	}
+	
+	public void setScanned(boolean b) {
+		scanned = b;
+	}
+
+	public boolean isColonized() {
+		return colonized;
+	}
+	
+	public void setColonized(boolean b) {
+		colonized = b;
 	}
 
 	public boolean isHomePlanet() {
@@ -154,5 +178,9 @@ public class Planet implements Serializable {
 		int x = random.nextInt((int) xLimit/GameModel.UNIT) * GameModel.UNIT;
 		int y = (random.nextInt((int) yLimit/GameModel.UNIT) * GameModel.UNIT) + offset;
 		return new Point(x, y);
+	}
+	
+	public String toString() {
+		return name + (scanned?(colonized?" [colonized]":" [scanned]"):"");
 	}
 }

@@ -6,7 +6,7 @@ import info.angrynerds.yamg.ui.*;
 import info.angrynerds.yamg.utils.*;
 
 public class Yamg {
-	public static final String VERSION = "Alpha Version 1.2.2";
+	public static final String VERSION = "Alpha Version 1.2.3";
 	
 	private LoadManager load;
 	private GameModel model;
@@ -26,7 +26,7 @@ public class Yamg {
 	public void runApplication() {
 		welcome.hideWindow();
 		load = new LoadManager();
-		load.initialize(19); i();
+		load.initialize(13); i();
 		model = new GameModel(this); i();
 		view = new GameView(this, model); i();
 		view.setVisible(true);

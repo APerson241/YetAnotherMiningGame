@@ -6,6 +6,7 @@ import info.angrynerds.yamg.utils.Direction;
 import info.angrynerds.yamg.utils.Helper;
 
 import java.awt.*;
+import java.awt.image.BufferedImage;
 
 import javax.swing.*;
 
@@ -35,7 +36,11 @@ public class GamePanel extends JPanel {
 	private void drawHUD(Graphics g) {
 		g.setFont(new Font(Font.SANS_SERIF, Font.BOLD, 14));
 		g.setColor((yOffset <= -GameModel.GROUND_LEVEL)?Color.GREEN:Color.BLACK);
-		g.drawString(String.format("$%,d", model.getBankAccount().getMoney()), getWidth() - 50, 15);
+		Font font = g.getFont();
+		BufferedImage img = new BufferedImage(1, 1, BufferedImage.TYPE_INT_ARGB);
+		FontMetrics fm = img.getGraphics().getFontMetrics(font);
+		String money = String.format("$%,d", model.getBankAccount().getMoney());
+		g.drawString(money, getWidth() - fm.stringWidth(money), 15);
 	}
 	
 	private boolean isYCoordInsideWindow(int yCoord) {
@@ -93,9 +98,8 @@ public class GamePanel extends JPanel {
 			g.setColor(Color.BLACK);
 			g.drawString("Press ENTER to restart! =D", (this.getWidth() - 615)/2, calcY + yOff);
 		} else if(model.LOCKED) {
-			g.setColor(Color.BLUE);
-			g.setFont(new Font(Font.SANS_SERIF, Font.BOLD, 200));
-			g.drawString("LOCKED!", (this.getWidth() - 874)/2, 250);
+			g.setColor(new Color(0, 0, 0, 0.5F));
+			g.fillRect(0, 0, this.getWidth(), this.getHeight());
 		}
 		if(!model.FIRST_STEP) {
 			int x = model.getRobotLocation().x;

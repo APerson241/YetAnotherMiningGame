@@ -52,10 +52,11 @@ public class GameModel implements PropertyChangeListener, Serializable {
 	
 	public GameModel(Yamg y) {
 		currentPlanet = new Planet(this, "main", true, BOTTOM);
+		portal = new Portal(this);
+		portal.addPlanet(currentPlanet);
 		robot = new Robot();
 		bank = new BankAccount(100);
 		shop = new Shop(this);
-		portal = new Portal(this);
 		yamg = y;
 		robot.addPropertyChangeListener(this);
 	}

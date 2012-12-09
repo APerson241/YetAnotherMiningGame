@@ -132,7 +132,7 @@ public class Shop {
 			unlockPanel.setBorder(BorderFactory.createTitledBorder("Unlocks"));
 			s.unlockPortalLabel = new JLabel("Loading...");
 			unlockPanel.add(s.unlockPortalLabel);
-			s.unlockPortalButton = new JButton("Unlock Portal ($30,000)");
+			s.unlockPortalButton = new JButton("Unlock Portal ($20,000)");
 			s.unlockPortalButton.addActionListener(new ButtonListener());
 			unlockPanel.add(s.unlockPortalButton);
 		mainPanel.add(unlockPanel);
@@ -148,6 +148,7 @@ public class Shop {
 		if((frame != null) && (model != null)) {
 			FuelTank tank = model.getRobot().getFuelTank();
 			assert (tank != null) : "The tank was null!";	// Sanity check
+			assert (s.fuelButton != null) : "The fuel button was null!";
 			// FUEL
 			if(tank.isInfinite()) {
 				s.fuelBar.setValue(100);
@@ -210,7 +211,7 @@ public class Shop {
 			s.unlockPortalLabel.setText(model.HAS_PORTAL?"You've already unlocked the portal!"
 					:"The Portal.  Unlocks a world of possibilities.");
 			s.unlockPortalButton.setEnabled(!model.HAS_PORTAL 
-					&& (model.getBankAccount().getMoney() >= 30000));
+					&& (model.getBankAccount().getMoney() >= 20000));
 			statusBar.setText("Money: " + Helper.formatMoney(model.getBankAccount().getMoney()));
 		}
 	}
@@ -293,7 +294,7 @@ public class Shop {
 						model.getRobot().sellDynamite();
 					}
 				} else if(button.getText().equals(s.unlockPortalButton.getText())) {
-					model.getBankAccount().withdraw(30000);
+					model.getBankAccount().withdraw(20000);
 					model.HAS_PORTAL = true;
 				}
 				model.doRefresh();

@@ -3,7 +3,6 @@ package info.angrynerds.yamg;
 import java.awt.*;
 import java.beans.*;
 import java.io.Serializable;
-import java.util.*;
 import java.util.List;
 
 import info.angrynerds.yamg.robot.*;
@@ -16,9 +15,7 @@ import info.angrynerds.yamg.utils.*;
  */
 @SuppressWarnings("serial")
 public class GameModel implements PropertyChangeListener, Serializable {
-	private ArrayList<Rectangle> holes;
-	private ArrayList<Element> elements;
-	private ArrayList<Rectangle> rocks;
+	private Planet currentPlanet;
 	
 	private Robot robot;
 	private transient Yamg yamg;
@@ -54,9 +51,7 @@ public class GameModel implements PropertyChangeListener, Serializable {
 	public static final int BOTTOM = 5000;
 	
 	public GameModel(Yamg y) {
-		holes = new ArrayList<Rectangle>();
-		elements = new ArrayList<Element>();
-		rocks = new ArrayList<Rectangle>();
+		currentPlanet = new Planet(this, "main", true, BOTTOM);
 		robot = new Robot();
 		bank = new BankAccount(100);
 		shop = new Shop(this);
@@ -66,7 +61,7 @@ public class GameModel implements PropertyChangeListener, Serializable {
 	}
 	
 	public void addHole(Point point) {
-		holes.add(new Rectangle(point.x, point.y, UNIT, UNIT));
+		currentPlanet.addHole(point);
 	}
 	
 	public static void setUnit(int newUnit) {
@@ -75,23 +70,23 @@ public class GameModel implements PropertyChangeListener, Serializable {
 	}
 	
 	public void addElement(Element element) {
-		elements.add(element);
+		currentPlanet.addElement(element);
 	}
 	
 	public void addRock(Point point) {
-		rocks.add(new Rectangle(point.x, point.y, UNIT, UNIT));
+		currentPlanet.addRock(point);
 	}
 	
 	public List<Rectangle> getHoles() {
-		return holes;
+		return currentPlanet.getHoles();
 	}
 	
 	public List<Element> getElements() {
-		return elements;
+		return currentPlanet.getElements();
 	}
 	
 	public List<Rectangle> getRocks() {
-		return rocks;
+		return currentPlanet.getRocks();
 	}
 	
 	public Point getRobotLocation() {
@@ -147,7 +142,7 @@ public class GameModel implements PropertyChangeListener, Serializable {
 	public boolean isSpaceAboveRobot() {
 		if(robot.getLocation().y <= 0) return false;
 		if(robot.getLocation().y <= GROUND_LEVEL) return true;
-		for(Rectangle hole:holes) {
+		for(Rectangle hole:currentPlanet.getHoles()) {
 			if(((hole.y + hole.height) == robot.getLocation().y) &&
 					(robot.getLocation().x == hole.x)) {
 				return true;
@@ -176,22 +171,22 @@ public class GameModel implements PropertyChangeListener, Serializable {
 		switch(direction) {
 		case UP:
 			result &= robot.getLocation().y > 0;
-			result &= !rocks.contains(new Rectangle(robot.getLocation().x,
+			result &= !currentPlanet.getRocks().contains(new Rectangle(robot.getLocation().x,
 					robot.getLocation().y - UNIT, UNIT, UNIT));
 			break;
 		case DOWN:
 			result &= robot.getLocation().y < 5175;	// 5175 = the bottom of the map
-			result &= !rocks.contains(new Rectangle(robot.getLocation().x,
+			result &= !currentPlanet.getRocks().contains(new Rectangle(robot.getLocation().x,
 					robot.getLocation().y + UNIT, UNIT, UNIT));
 			break;
 		case LEFT:
 			result &= robot.getLocation().x > 0;
-			result &= !rocks.contains(new Rectangle(robot.getLocation().x - UNIT,
+			result &= !currentPlanet.getRocks().contains(new Rectangle(robot.getLocation().x - UNIT,
 					robot.getLocation().y, UNIT, UNIT));
 			break;
 		case RIGHT:
 			result &= robot.getLocation().x < yamg.getFrameBounds().width - UNIT;
-			result &= !rocks.contains(new Rectangle(robot.getLocation().x + UNIT,
+			result &= !currentPlanet.getRocks().contains(new Rectangle(robot.getLocation().x + UNIT,
 					robot.getLocation().y, UNIT, UNIT));
 			break;
 		}
@@ -200,18 +195,7 @@ public class GameModel implements PropertyChangeListener, Serializable {
 	}
 	
 	public Element removeElement(Point location) {
-		Element deleted = null;
-		for(Element element:elements) {
-			if(element.getLocation().equals(location)) {
-				deleted = element;
-				break;
-			}
-		}
-		if(deleted != null) {
-			bank.deposit(deleted.getType().getPrice());
-			elements.remove(deleted);
-		}
-		return deleted;
+		return currentPlanet.removeElement(location);
 	}
 
 	public GameView getView() {

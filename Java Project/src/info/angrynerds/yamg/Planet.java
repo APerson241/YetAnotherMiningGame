@@ -1,9 +1,10 @@
 package info.angrynerds.yamg;
 
-import info.angrynerds.yamg.robot.Element;
+import info.angrynerds.yamg.robot.*;
 
 import java.awt.*;
 import java.io.Serializable;
+import java.util.*;
 import java.util.List;
 
 /**
@@ -27,6 +28,9 @@ public class Planet implements Serializable {
 	
 	/**
 	 * The constructor for a Planet.
+	 * @param model A reference to the main GameModel.
+	 * @param name The name of the world.
+	 * @param homePlanet Whether or not this planet is the home planet of the robot.
 	 * @param bottom The y-coordinate indicating the bottom of the map.
 	 */
 	public Planet(GameModel model, String name, boolean homePlanet, int bottom) {
@@ -34,6 +38,10 @@ public class Planet implements Serializable {
 		this.name = name;
 		this.homePlanet = homePlanet;
 		BOTTOM = bottom;
+		holes = new ArrayList<Rectangle>();
+		elements = new ArrayList<Element>();
+		rocks = new ArrayList<Rectangle>();
+		buildWorld();
 	}
 	
 	public List<Rectangle> getHoles() {
@@ -67,6 +75,10 @@ public class Planet implements Serializable {
 		return BOTTOM;
 	}
 	
+	public void addHole(Point point) {
+		holes.add(new Rectangle(point.x, point.y, GameModel.UNIT, GameModel.UNIT));
+	}
+	
 	public void addElement(Element element) {
 		elements.add(element);
 	}
@@ -92,5 +104,55 @@ public class Planet implements Serializable {
 	
 	public boolean containsRobot() {
 		return containsRobot;
+	}
+	
+	private void buildWorld() {
+		initializeHoles();
+		initializeElements();
+		initializeRocks();
+	}
+	
+	private void initializeHoles() {
+		for(int i = 0; i < 500; i++) {
+			addHole(getRandomLocationOnGrid(GameModel.GROUND_LEVEL + 25));
+		}
+	}
+	
+	private void initializeElements() {
+		int number = ElementType.values().length * 10 + (GameModel.UNIT * 10);
+		for(ElementType type:ElementType.values()) {
+			for(int i = 0; i < number; i++) {
+				addElement(new Element(type,
+						getRandomLocationOnGrid(GameModel.GROUND_LEVEL + 25)));
+			}
+			number -= 10;
+		}
+	}
+	
+	private void initializeRocks() {
+		for(int i = 0; i < 250; i++) {
+			Point point = getRandomLocationOnGrid(525);
+			if(getElements().contains(new Rectangle(point.x,
+					point.y, GameModel.UNIT, GameModel.UNIT))) {
+				i++;
+				continue;
+			} else {
+				addRock(point);
+			}
+		}
+		int UNIT4 = GameModel.UNIT * 4;	// Should be 100 if UNIT is 25
+		addRock(new Point(UNIT4 * 3, UNIT4 * 2));	// Below the Shop
+		addRock(new Point(UNIT4 * 3 + GameModel.UNIT, UNIT4 * 2));
+		addRock(new Point(UNIT4 * 3 + GameModel.UNIT * 2, UNIT4 * 2));
+	}
+	
+	private Point getRandomLocationOnGrid(int offset) {
+		Random random = new Random();
+		Dimension screen = Toolkit.getDefaultToolkit().getScreenSize();
+		int xLimit = screen.width - 100;
+		int yLimit = BOTTOM;
+		int x = random.nextInt((int) xLimit/GameModel.UNIT) * GameModel.UNIT;
+		int y = (random.nextInt((int) yLimit/GameModel.UNIT) * GameModel.UNIT) + offset;
+		return new Point(x, y);
 	}
 }

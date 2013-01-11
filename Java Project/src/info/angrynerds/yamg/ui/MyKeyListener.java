@@ -46,6 +46,10 @@ public class MyKeyListener implements KeyListener {
 		allowedToMove &= !model.LOCKED;
 		if(allowedToMove) {
 			model.getRobot().move(GameModel.UNIT, direction);
+			if(view.getPanel().justVisitedRock() && !model.isRockNextToRobot()) {
+				model.HAS_VISITED_ROCK = true;
+				view.getPanel().setJustVisitedRock(false);
+			}
 			if(view.getAutoscroll() && view.canScroll(scrollDirection))
 				view.getPanel().scroll(scrollDirection, GameModel.UNIT);
 			Element el = model.removeElement(model.getRobotLocation());
@@ -65,7 +69,7 @@ public class MyKeyListener implements KeyListener {
 		} else if(model.getPortal().getBounds().contains(model.getRobotLocation())) {
 			view.getFlyups().setPermanentFlyUp("Press S to open Real Estate");
 		} else view.getFlyups().setPermanentFlyUp("");
-		//		System.out.println("Moved robot.");
+//		System.out.println("Moved robot.");
 		model.doRefresh();
 	}
 

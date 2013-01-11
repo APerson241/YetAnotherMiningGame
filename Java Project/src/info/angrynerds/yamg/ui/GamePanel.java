@@ -19,6 +19,10 @@ public class GamePanel extends JPanel {
 	private Dimension windowDimension;
 	private GameModel model;
 	private FlyUpsManager flyups;
+	/**
+	 * Whether or not the robot just has visited a rock.
+	 */
+	private boolean justVisitedRock;
 	
 	/**
 	 * Used for scrolling
@@ -111,6 +115,20 @@ public class GamePanel extends JPanel {
 			g.setFont(new Font(Font.SANS_SERIF, Font.BOLD, 20));
 			g.drawString("Use the arrow keys", x - GameModel.UNIT, y - GameModel.UNIT - 10);
 			g.drawString("to move the robot!", x - GameModel.UNIT, y - GameModel.UNIT + 10);
+		} else if(model.isRockNextToRobot() && !model.HAS_VISITED_ROCK){
+			int x = model.getRobotLocation().x;
+			int y = model.getRobotLocation().y;
+			g.setColor(new Color(1, 1, 1, 0.75F));
+			g.fillRect(x - GameModel.UNIT - 5, y - GameModel.UNIT - 30, 190, 50);
+			g.setColor(Color.BLACK);
+			g.drawRect(x - GameModel.UNIT - 5, y - GameModel.UNIT - 30, 190, 50);
+			g.setFont(new Font(Font.SANS_SERIF, Font.BOLD, 20));
+			g.drawString("Use dynamite to blow up rocks!", x - GameModel.UNIT,
+					y - GameModel.UNIT - 10);
+			g.drawString("Dynamite can be purchased from the Shop.", x - GameModel.UNIT,
+					y - GameModel.UNIT + 10);
+			justVisitedRock = true;
+			
 		}
 		drawHUD(g);
 	}
@@ -128,5 +146,13 @@ public class GamePanel extends JPanel {
 
 	public int getScroll() {
 		return yOffset;
+	}
+	
+	public boolean justVisitedRock() {
+		return justVisitedRock;
+	}
+
+	public void setJustVisitedRock(boolean b) {
+		justVisitedRock = b;
 	}
 }

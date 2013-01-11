@@ -25,15 +25,21 @@ public class GameModel implements PropertyChangeListener, Serializable {
 	
 	private static transient Thread gravityThread = null;
 	
+	// MILESTONES
 	/**
 	 * Whether or not the user has taken a step yet.
 	 */
 	public transient boolean FIRST_STEP = false;
-	public transient boolean GRAVITY = true;
 	/**
 	 * Whether or not the user has purchased the portal yet.
 	 */
 	public boolean HAS_PORTAL = false;
+	/**
+	 * Whether or not the user has been located next to a rock yet.
+	 */
+	public boolean HAS_VISITED_ROCK = false;
+	
+	public transient boolean GRAVITY = true;
 	public transient boolean LOCKED = false;
 	/**
 	 * Whether or not the user has infinite dynamite.
@@ -172,25 +178,18 @@ public class GameModel implements PropertyChangeListener, Serializable {
 		switch(direction) {
 		case UP:
 			result &= robot.getLocation().y > 0;
-			result &= !currentPlanet.getRocks().contains(new Rectangle(robot.getLocation().x,
-					robot.getLocation().y - UNIT, UNIT, UNIT));
 			break;
 		case DOWN:
-			result &= robot.getLocation().y < 5175;	// 5175 = the bottom of the map
-			result &= !currentPlanet.getRocks().contains(new Rectangle(robot.getLocation().x,
-					robot.getLocation().y + UNIT, UNIT, UNIT));
+			result &= robot.getLocation().y < currentPlanet.getBOTTOM();
 			break;
 		case LEFT:
 			result &= robot.getLocation().x > 0;
-			result &= !currentPlanet.getRocks().contains(new Rectangle(robot.getLocation().x - UNIT,
-					robot.getLocation().y, UNIT, UNIT));
 			break;
 		case RIGHT:
 			result &= robot.getLocation().x < yamg.getFrameBounds().width - UNIT;
-			result &= !currentPlanet.getRocks().contains(new Rectangle(robot.getLocation().x + UNIT,
-					robot.getLocation().y, UNIT, UNIT));
 			break;
 		}
+		result &= !isRockNextToRobot(direction);
 		result &= robot.getFuelTank().getFuelLevel() > 0;
 		return result;
 	}
@@ -209,5 +208,25 @@ public class GameModel implements PropertyChangeListener, Serializable {
 
 	public Yamg getController() {
 		return yamg;
+	}
+
+	public boolean isRockNextToRobot() {
+		for(Direction direction:Direction.values()) {
+			if(isRockNextToRobot(direction)) {
+				return true;
+			}
+		}
+		return false;
+	}
+	
+	public boolean isRockNextToRobot(Direction direction) {
+		// If direction is LEFT, negative UNIT; else if direction is RIGHT, UNIT
+		int xOffset = (direction.equals(Direction.LEFT))?(-UNIT)
+				:((direction.equals(Direction.RIGHT))?UNIT:0);
+		// If direction is UP, negative UNIT; else if direction is DOWN, UNIT
+		int yOffset = (direction.equals(Direction.UP))?(-UNIT)
+				:((direction.equals(Direction.DOWN))?UNIT:0);
+		return currentPlanet.getRocks().contains(new Rectangle(robot.getLocation().x + xOffset,
+				robot.getLocation().y + yOffset, UNIT, UNIT));
 	}
 }

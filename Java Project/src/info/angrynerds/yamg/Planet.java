@@ -95,7 +95,9 @@ public class Planet implements Serializable {
 		return !homePlanet;
 	}
 
-	public static int getBOTTOM() {
+	public int getBOTTOM() {
+		if(model.getView().getOptions().isVerbose())
+			System.out.println("[Planet.getBOTTOM()] BOTTOM = " + BOTTOM);
 		return BOTTOM;
 	}
 	

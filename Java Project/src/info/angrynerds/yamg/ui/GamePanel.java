@@ -2,27 +2,22 @@ package info.angrynerds.yamg.ui;
 
 import info.angrynerds.yamg.*;
 import info.angrynerds.yamg.robot.Element;
+import info.angrynerds.yamg.utils.Configurables;
 import info.angrynerds.yamg.utils.Direction;
 import info.angrynerds.yamg.utils.Helper;
 
 import java.awt.*;
-import java.awt.image.BufferedImage;
 
 import javax.swing.*;
 
 @SuppressWarnings("serial")
 public class GamePanel extends JPanel {
-	
 	/**
 	 * How big the client window is
 	 */
-	private Dimension windowDimension;
+	public static Dimension windowDimension;
 	private GameModel model;
 	private FlyUpsManager flyups;
-	/**
-	 * Whether or not the robot just has visited a rock.
-	 */
-	private boolean justVisitedRock;
 	
 	/**
 	 * Used for scrolling
@@ -38,13 +33,26 @@ public class GamePanel extends JPanel {
 	}
 	
 	private void drawHUD(Graphics g) {
-		g.setFont(new Font(Font.SANS_SERIF, Font.BOLD, 14));
-		g.setColor((yOffset <= -GameModel.GROUND_LEVEL)?Color.GREEN:Color.BLACK);
-		Font font = g.getFont();
-		BufferedImage img = new BufferedImage(1, 1, BufferedImage.TYPE_INT_ARGB);
-		FontMetrics fm = img.getGraphics().getFontMetrics(font);
+		boolean underground = yOffset <= -GameModel.GROUND_LEVEL;
+		// Version
+		g.setFont(new Font(Font.SANS_SERIF, Font.PLAIN, 12));
+		g.setColor(Color.WHITE);
+		g.drawString(Yamg.VERSION, 5, getHeight() - 10);
+		// Money
+		g.setFont(new Font(Font.SANS_SERIF, Font.BOLD, 24));
+		g.setColor(new Color(0, underground?255:0, 0, 128));
 		String money = String.format("$%,d", model.getBankAccount().getMoney());
-		g.drawString(money, getWidth() - fm.stringWidth(money), 15);
+		int moneyX = getWidth() - g.getFontMetrics().stringWidth(money) - 5;
+		g.drawString(money, moneyX, 25);
+		// Fuel
+		final int fuelProgressBarWidth = 200;
+		g.setColor(new Color(underground?255:0, underground?255:0, underground?255:0, 172));
+		g.drawRect(moneyX - fuelProgressBarWidth - 5, 6, fuelProgressBarWidth, 20);
+		g.fillRect(moneyX - fuelProgressBarWidth - 5, 6,
+				model.getRobot().getFuelTank().getFuelPercent() * fuelProgressBarWidth / 100, 20);
+		g.setFont(new Font(Font.SANS_SERIF, Font.PLAIN, 12));
+		g.setColor(Color.WHITE);
+		g.drawString("Fuel", moneyX - fuelProgressBarWidth/2 - 15, 19);
 	}
 	
 	private boolean isYCoordInsideWindow(int yCoord) {
@@ -57,25 +65,23 @@ public class GamePanel extends JPanel {
 	 * @param g The graphics thingy.
 	 */
 	public void paintComponent(Graphics g) {
-		g.setColor(Color.CYAN);
-		g.fillRect(0, yOffset, windowDimension.width, GameModel.GROUND_LEVEL);
+		Graphics2D g2D = (Graphics2D) g;
+		g2D.setPaint(new GradientPaint(windowDimension.width / 2, 0, Color.LIGHT_GRAY, windowDimension.width / 2,
+				GameModel.GROUND_LEVEL + yOffset, Color.CYAN));
+		g2D.fillRect(0, yOffset, windowDimension.width, GameModel.GROUND_LEVEL);
 		g.setColor(DEFAULT_GROUND);
-		g.fillRect(0, yOffset + GameModel.GROUND_LEVEL, windowDimension.width, GameModel.BOTTOM);
+		g.fillRect(0, yOffset + GameModel.GROUND_LEVEL, windowDimension.width, Configurables.BOTTOM);
 		model.getShop().paint(g);
-		if(model.HAS_PORTAL) model.getPortal().paint(g);
+		if(model.HAS_PORTAL) model.getPortal().paintOutside(g);
 		g.setColor(Color.LIGHT_GRAY);
-		for(Rectangle rect:model.getHoles()) {
-			if(isYCoordInsideWindow(rect.y)) {
+		for(Rectangle rect:model.getHoles())
+			if(isYCoordInsideWindow(rect.y))
 				g.fillRect(rect.x, rect.y + yOffset, GameModel.UNIT, GameModel.UNIT);
-			}
-//			System.out.println("Filled a hole.");
-		}
+		drawRobot(g);
 		g.setColor(Color.BLACK);
-		for(Rectangle rect:model.getRocks()) {
-			if(isYCoordInsideWindow(rect.y)) {
+		for(Rectangle rect:model.getRocks())
+			if(isYCoordInsideWindow(rect.y))
 				g.fillRect(rect.x, rect.y + yOffset, GameModel.UNIT, GameModel.UNIT);
-			}
-		}
 		for(Element elem:model.getElements()) {
 			if(isYCoordInsideWindow(elem.getLocation().y)) {
 				g.setColor(elem.getColor());
@@ -83,10 +89,6 @@ public class GamePanel extends JPanel {
 					GameModel.UNIT, GameModel.UNIT);
 			}
 		}
-		g.setColor(model.getRobot().isDead()?Color.RED:Color.GREEN);
-		g.fillRoundRect(model.getRobotLocation().x, model.getRobotLocation().y + yOffset,
-				GameModel.UNIT, GameModel.UNIT,
-				9, 9);
 		flyups.paint(g, yOffset);
 		if(model.getRobot().isDead() && model.getRobot().getReserves() <= 0) {
 			g.setColor(new Color(255, 255, 255, 200));
@@ -96,14 +98,16 @@ public class GamePanel extends JPanel {
 			int calcY = (this.getHeight() + 50)/2;	// Centered on the vertical axis
 			int yOff = 50;	// How far the other two lines are offset from the center line
 			g.setFont(new Font(Font.SANS_SERIF, Font.BOLD, 72));
-			g.drawString("LOL YOU ARE DEAD", (this.getWidth() - 700)/2, calcY - yOff);
+			g.drawString("GAME OVER", (this.getWidth() - 700)/2, calcY - yOff);
 			g.setFont(new Font(Font.SANS_SERIF, Font.BOLD, 48));
-			g.drawString("Now you have to start over again", (this.getWidth() - 745)/2, calcY);
+			g.drawString("You ran out of fuel - so you died.", (this.getWidth() - 745)/2, calcY);
 			g.setColor(Color.BLACK);
-			g.drawString("Press ENTER to restart! =D", (this.getWidth() - 615)/2, calcY + yOff);
-		} else if(model.LOCKED) {
-			g.setColor(new Color(0, 0, 0, 0.5F));
+			g.drawString("Press ENTER to restart!", (this.getWidth() - 615)/2, calcY + yOff);
+		} else if(model.isLocked()) {
+			g.setColor(new Color(0, 0, 0, 128));
 			g.fillRect(0, 0, this.getWidth(), this.getHeight());
+			if(model.getPortal().isVisible())
+				model.getPortal().paintWindow(g);
 		}
 		if(!model.FIRST_STEP) {
 			int x = model.getRobotLocation().x;
@@ -115,22 +119,19 @@ public class GamePanel extends JPanel {
 			g.setFont(new Font(Font.SANS_SERIF, Font.BOLD, 20));
 			g.drawString("Use the arrow keys", x - GameModel.UNIT, y - GameModel.UNIT - 10);
 			g.drawString("to move the robot!", x - GameModel.UNIT, y - GameModel.UNIT + 10);
-		} else if(model.isRockNextToRobot() && !model.HAS_VISITED_ROCK){
-			int x = model.getRobotLocation().x;
-			int y = model.getRobotLocation().y;
-			g.setColor(new Color(1, 1, 1, 0.75F));
-			g.fillRect(x - GameModel.UNIT - 5, y - GameModel.UNIT - 30, 190, 50);
-			g.setColor(Color.BLACK);
-			g.drawRect(x - GameModel.UNIT - 5, y - GameModel.UNIT - 30, 190, 50);
-			g.setFont(new Font(Font.SANS_SERIF, Font.BOLD, 20));
-			g.drawString("Use dynamite to blow up rocks!", x - GameModel.UNIT,
-					y - GameModel.UNIT - 10);
-			g.drawString("Dynamite can be purchased from the Shop.", x - GameModel.UNIT,
-					y - GameModel.UNIT + 10);
-			justVisitedRock = true;
-			
 		}
 		drawHUD(g);
+	}
+	
+	private void drawRobot(Graphics g) {
+		g.setColor(model.getRobot().isDead()?Color.RED:Color.GREEN);
+		drawRobot(g, model.getRobotLocation());
+	}
+	
+	public void drawRobot(Graphics g, Point position) {
+		g.fillRoundRect(model.getRobotLocation().x, model.getRobotLocation().y + yOffset,
+				GameModel.UNIT, GameModel.UNIT,
+				9, 9);
 	}
 
 	public void scroll(Direction up, int i) {
@@ -146,13 +147,5 @@ public class GamePanel extends JPanel {
 
 	public int getScroll() {
 		return yOffset;
-	}
-	
-	public boolean justVisitedRock() {
-		return justVisitedRock;
-	}
-
-	public void setJustVisitedRock(boolean b) {
-		justVisitedRock = b;
 	}
 }

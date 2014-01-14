@@ -6,7 +6,7 @@ import info.angrynerds.yamg.ui.*;
 import info.angrynerds.yamg.utils.*;
 
 public class Yamg {
-	public static final String VERSION = "Alpha Version 1.2.3";
+	public static final String VERSION = "Alpha Version 1.2.4";
 	
 	private LoadManager load;
 	private GameModel model;
@@ -34,9 +34,10 @@ public class Yamg {
 	
 	public void i() {load.i();}
 	
-	public Rectangle getFrameBounds() {
+	public static Rectangle getFrameBounds() {
 		Dimension screen = Toolkit.getDefaultToolkit().getScreenSize();
-		return Helper.getCenteredBounds(screen.width - 100, screen.height - 100);
+		return Helper.getCenteredBounds(screen.width - Configurables.SCREEN_MARGIN,
+				screen.height - Configurables.SCREEN_MARGIN);
 	}
 
 	public GameModel getModel() {

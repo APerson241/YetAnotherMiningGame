@@ -8,7 +8,7 @@ public class LoadManager {
 	private JFrame frame;
 	private JProgressBar bar;
 	
-	private int finalProgress = 100;
+	private int finalProgress = 75;
 	private int currentProgress = 0;
 	
 	public LoadManager() {
@@ -30,13 +30,12 @@ public class LoadManager {
 	
 	public void initialize(int finalProgress) {
 		this.finalProgress = finalProgress;
-		frame.setVisible(true);
 	}
 	
 	public void i() {
 		currentProgress++;
 		if(currentProgress < finalProgress) {
-		bar.setValue((int)((currentProgress/finalProgress)*100));
+			bar.setValue((int)((currentProgress/finalProgress)*100));
 		} else {
 			bar.setValue(100);
 			frame.setVisible(false);

@@ -34,13 +34,8 @@ public class GameModel implements PropertyChangeListener, Serializable {
 	 * Whether or not the user has purchased the portal yet.
 	 */
 	public boolean HAS_PORTAL = false;
-	/**
-	 * Whether or not the user has been located next to a rock yet.
-	 */
-	public boolean HAS_VISITED_ROCK = false;
 	
 	public transient boolean GRAVITY = true;
-	public transient boolean LOCKED = false;
 	/**
 	 * Whether or not the user has infinite dynamite.
 	 */
@@ -49,19 +44,15 @@ public class GameModel implements PropertyChangeListener, Serializable {
 	/**
 	 * The side of one square.
 	 */
-	public static transient int UNIT = 25;	// Should be 25.
+	public static transient int UNIT = Configurables.DEFAULT_UNIT;
 	public static int GROUND_LEVEL = UNIT * 8;
-	/**
-	 * The y-coordinate of the bottom of the map.
-	 */
-	public static final int BOTTOM = 5000;
 	
 	public GameModel(Yamg y) {
-		currentPlanet = new Planet(this, "main", true, BOTTOM);
+		currentPlanet = new Planet(this, "Home", true, Yamg.getFrameBounds().width, Configurables.BOTTOM);
 		portal = new Portal(this);
 		portal.addPlanet(currentPlanet);
 		robot = new Robot();
-		bank = new BankAccount(100);
+		bank = new BankAccount(Configurables.STARTING_MONEY);
 		shop = new Shop(this);
 		yamg = y;
 		robot.addPropertyChangeListener(this);
@@ -186,7 +177,7 @@ public class GameModel implements PropertyChangeListener, Serializable {
 			result &= robot.getLocation().x > 0;
 			break;
 		case RIGHT:
-			result &= robot.getLocation().x < yamg.getFrameBounds().width - UNIT;
+			result &= robot.getLocation().x < Yamg.getFrameBounds().width - UNIT;
 			break;
 		}
 		result &= !isRockNextToRobot(direction);
@@ -228,5 +219,60 @@ public class GameModel implements PropertyChangeListener, Serializable {
 				:((direction.equals(Direction.DOWN))?UNIT:0);
 		return currentPlanet.getRocks().contains(new Rectangle(robot.getLocation().x + xOffset,
 				robot.getLocation().y + yOffset, UNIT, UNIT));
+	}
+	
+	/**
+	 * Whether or not the model is locked.
+	 * @return Whether or not the model is locked.
+	 */
+	public boolean isLocked() {
+		return shop.isVisible() || portal.isVisible();
+	}
+
+	/* (non-Javadoc)
+	 * @see java.lang.Object#hashCode()
+	 */
+	@Override
+	public int hashCode() {
+		final int prime = 31;
+		int result = 1;
+		result = prime * result + (HAS_PORTAL ? 1231 : 1237);
+		result = prime * result + ((bank == null) ? 0 : bank.hashCode());
+		result = prime * result
+				+ ((currentPlanet == null) ? 0 : currentPlanet.hashCode());
+		result = prime * result + ((robot == null) ? 0 : robot.hashCode());
+		return result;
+	}
+
+	/* (non-Javadoc)
+	 * @see java.lang.Object#equals(java.lang.Object)
+	 */
+	@Override
+	public boolean equals(Object obj) {
+		if (this == obj)
+			return true;
+		if (obj == null)
+			return false;
+		if (getClass() != obj.getClass())
+			return false;
+		GameModel other = (GameModel) obj;
+		if (HAS_PORTAL != other.HAS_PORTAL)
+			return false;
+		if (bank == null) {
+			if (other.bank != null)
+				return false;
+		} else if (!bank.equals(other.bank))
+			return false;
+		if (currentPlanet == null) {
+			if (other.currentPlanet != null)
+				return false;
+		} else if (!currentPlanet.equals(other.currentPlanet))
+			return false;
+		if (robot == null) {
+			if (other.robot != null)
+				return false;
+		} else if (!robot.equals(other.robot))
+			return false;
+		return true;
 	}
 }

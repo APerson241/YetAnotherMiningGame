@@ -90,4 +90,41 @@ public class FuelTank {
 	public boolean isEmpty() {
 		return fuelLevel == 0;
 	}
+
+	/**
+	 * @see java.lang.Object#hashCode()
+	 */
+	@Override
+	public int hashCode() {
+		final int prime = 31;
+		int result = 1;
+		result = prime * result + fuelCapacity;
+		result = prime * result + fuelLevel;
+		result = prime * result + (infinite ? 1231 : 1237);
+		result = prime * result + tier;
+		return result;
+	}
+
+	/**
+	 * @see java.lang.Object#equals(java.lang.Object)
+	 */
+	@Override
+	public boolean equals(Object obj) {
+		if (this == obj)
+			return true;
+		if (obj == null)
+			return false;
+		if (getClass() != obj.getClass())
+			return false;
+		FuelTank other = (FuelTank) obj;
+		if (fuelCapacity != other.fuelCapacity)
+			return false;
+		if (fuelLevel != other.fuelLevel)
+			return false;
+		if (infinite != other.infinite)
+			return false;
+		if (tier != other.tier)
+			return false;
+		return true;
+	}
 }

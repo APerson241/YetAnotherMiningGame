@@ -1,6 +1,7 @@
 package info.angrynerds.yamg.robot;
 
 import info.angrynerds.yamg.GameModel;
+import info.angrynerds.yamg.utils.Configurables;
 import info.angrynerds.yamg.utils.Helper;
 
 import java.awt.*;
@@ -42,13 +43,22 @@ public class Shop {
 				bounds.y + (GameModel.UNIT * 2) + yOffset);
 		g.setFont(original);
 	}
-
-	public void showDialog() {
-		if(frame == null) {
-			buildGUI();
-		}
+	
+	/**
+	 * Sets whether or not the window is visible.
+	 */
+	public void setVisible(boolean visible) {
+		if(frame == null) buildGUI();
+		frame.setVisible(visible);
 		model.doRefresh();
-		frame.setVisible(true);
+	}
+	
+	/**
+	 * Returns whether or not the window is visible.
+	 */
+	public boolean isVisible() {
+		if(frame == null) buildGUI();
+		return frame.isVisible();
 	}
 
 	/**
@@ -199,12 +209,12 @@ public class Shop {
 			}
 			int dt = model.getRobot().getDynamiteTier();
 			s.upgradeDynamiteLabel.setText(String.format("Tier %,d, Blast radius: %,d", dt, dt));
-			if(model.getRobot().getDynamiteTier() >= 2) {
+			if(model.getRobot().getDynamiteTier() >= Configurables.MAX_DYNAMITE_LEVEL) {
 				s.upgradeDynamiteButton.setText("Fully Upgraded!");
 				s.upgradeDynamiteButton.setEnabled(false);
 			} else {
-				int dNeeded = 10 + (((int)Math.pow(dt + 1, 2)) * 20);
-				s.upgradeDynamiteButton.setText(String.format("Upgrade Dynamite ($%,d)", dNeeded));
+				int dNeeded = 10 + (((int)Math.pow(dt + 1, 3)) * 40);
+				s.upgradeDynamiteButton.setText("Upgrade Dynamite ($" + ((dNeeded >= 1000)?(dNeeded / 1000) + "K":dNeeded) + ")");
 				s.upgradeDynamiteButton.setEnabled(model.getBankAccount().getMoney() >= dNeeded);
 			}
 			// UNLOCK
@@ -317,17 +327,11 @@ public class Shop {
 		public void windowActivated(WindowEvent arg0) {}
 		public void windowClosed(WindowEvent arg0) {}
 		public void windowClosing(WindowEvent arg0) {
-			model.LOCKED = false;
 			model.getView().refreshView();
 		}
 		public void windowDeactivated(WindowEvent arg0) {}
 		public void windowDeiconified(WindowEvent arg0) {}
 		public void windowIconified(WindowEvent arg0) {}
 		public void windowOpened(WindowEvent arg0) {}
-	}
-
-	public void hideDialog() {
-		if(frame == null) buildGUI();
-		frame.setVisible(false);
 	}
 }

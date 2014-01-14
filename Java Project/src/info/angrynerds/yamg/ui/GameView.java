@@ -20,7 +20,6 @@ public class GameView {
 	
 	private GamePanel panel;
 	private GameModel model;
-	private HUDManager hud;
 	private FlyUpsManager flyups;
 	private OptionsManager options;
 	
@@ -78,7 +77,6 @@ public class GameView {
 		frame.setJMenuBar(menuBar);
 		frame.getContentPane().add(BorderLayout.SOUTH, statusBar); i();
 		frame.getContentPane().add(BorderLayout.CENTER, panel); i();
-		frame.getContentPane().add(BorderLayout.NORTH, hud.getPanel()); i();
 		frame.addKeyListener(new MyKeyListener(yamg, yamg.getModel(), this)); i();
 		frame.setResizable(false); i();
 		frame.setBounds(Helper.getCenteredBounds(
@@ -95,7 +93,6 @@ public class GameView {
 
 	public void setVisible(boolean visible) {
 		if(frame == null) {
-			hud = new HUDManager(model);
 			flyups = new FlyUpsManager();
 			options = new OptionsManager(model);
 			buildGUI();
@@ -118,10 +115,8 @@ public class GameView {
 	public void refreshView() {
 		if(options.isVerbose()) System.out.println("[GameView] Refreshing view...");
 		panel.repaint();
-		hud.update();
 		statusBar.setText(getStatusBarText());
 		model.getShop().update();
-		model.getPortal().update();
 	}
 	
 	public String getStatusBarText() {
@@ -130,9 +125,9 @@ public class GameView {
 				", abvH " + (model.getHoles().contains(new Rectangle(model.getRobotLocation().x,
 						model.getRobotLocation().y + 25, 25, 25))):"";
 		
-		return "Status: " + (model.LOCKED?"Locked":"Ready") + " | Robot position = (" +
+		return "Status: " + (model.isLocked()?"Locked":"Ready") + " | Robot position = (" +
 			model.getRobotLocation().x + ", " + model.getRobotLocation().y +
-			") | Scroll position = " + panel.getScroll() +
+			")" + (options.isScrollPositionOnStatus()?(" | Scroll position = " + panel.getScroll()):"") +
 			(options.isAutoscrollOnStatus()?(" | Autoscroll " + (autoscroll ? "ON"
 			: "OFF")):"") + (options.isGravityOnStatus()?(" | Gravity " +
 			(model.isGravity() ? "ON" : "OFF")):"") + gravityInfo +
@@ -251,10 +246,16 @@ public class GameView {
 			if(options.isPrintMouseCoords()) {
 				System.out.println("Mouse was clicked: " + arg0.getPoint());
 			}
-			if(model.LOCKED) {
-				model.LOCKED = false;
-				model.getShop().hideDialog();
-				model.getPortal().setDialogVisible(false);
+			if(model.isLocked()) {
+				if(model.getPortal().isVisible()) {
+					if(model.getPortal().getWindowBounds().contains(arg0.getPoint())) {
+						model.getPortal().mouseClick(arg0.getPoint());
+					} else {
+						model.getPortal().setVisible(false);
+					}
+				} else {
+					model.getShop().setVisible(false);
+				}
 				refreshView();
 			}
 		}
@@ -270,7 +271,8 @@ public class GameView {
 					isRefreshing = false;
 					refreshView();
 				}
-				fps = (new Date()).getTime() - lastRefresh.getTime();
+				long timePassed = (new Date()).getTime() - lastRefresh.getTime();
+				fps = (timePassed==0)?0:(1000/timePassed);
 				refreshView();
 				lastRefresh = new Date();
 				try {

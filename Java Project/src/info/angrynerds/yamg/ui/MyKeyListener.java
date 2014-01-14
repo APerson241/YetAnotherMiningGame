@@ -43,13 +43,9 @@ public class MyKeyListener implements KeyListener {
 		// Handle all the other key events here
 		handleOtherKeyEvents(keyCode);
 		allowedToMove &= model.canRobotMove(direction);
-		allowedToMove &= !model.LOCKED;
+		allowedToMove &= !model.isLocked();
 		if(allowedToMove) {
 			model.getRobot().move(GameModel.UNIT, direction);
-			if(view.getPanel().justVisitedRock() && !model.isRockNextToRobot()) {
-				model.HAS_VISITED_ROCK = true;
-				view.getPanel().setJustVisitedRock(false);
-			}
 			if(view.getAutoscroll() && view.canScroll(scrollDirection))
 				view.getPanel().scroll(scrollDirection, GameModel.UNIT);
 			Element el = model.removeElement(model.getRobotLocation());
@@ -80,12 +76,10 @@ public class MyKeyListener implements KeyListener {
 	private void handleOtherKeyEvents(int keyCode) {
 		if(keyCode == KeyEvent.VK_S) {
 			if(model.getShop().getBounds().contains(model.getRobotLocation())) {
-				model.getShop().showDialog();
-				model.LOCKED = true;
+				model.getShop().setVisible(true);
 				view.refreshView();
 			} else if(model.getPortal().getBounds().contains(model.getRobotLocation())) {
-				model.getPortal().setDialogVisible(true);
-				model.LOCKED = true;
+				model.getPortal().setVisible(true);
 				view.refreshView();
 			}
 		} else if(keyCode == KeyEvent.VK_J) {

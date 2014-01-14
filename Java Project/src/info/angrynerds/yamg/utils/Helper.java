@@ -1,5 +1,7 @@
 package info.angrynerds.yamg.utils;
 
+import info.angrynerds.yamg.ui.OptionsManager;
+
 import java.awt.*;
 
 public abstract class Helper {
@@ -11,10 +13,7 @@ public abstract class Helper {
 	 */
 	public static Rectangle getCenteredBounds(Dimension dimension) {
 		Dimension screen = Toolkit.getDefaultToolkit().getScreenSize();
-		int x = (screen.width - dimension.width)/2;
-		int y = (screen.height - dimension.height)/2;
-		Rectangle result = new Rectangle(x, y, dimension.width, dimension.height);
-		return result;
+		return getCenteredBounds(dimension, screen);
 	}
 	
 	/**
@@ -43,37 +42,29 @@ public abstract class Helper {
 		return String.format("%,d", number);
 	}
 	
-	public static Point[] getThreeByThreeAround(Point point, int blockSize) {
-		/* 0 1 2
-		 * 3 4 5
-		 * 6 7 8
-		 */ 
-		Point[] result = new Point[9];
-		int i = 0;
-		for(int x = point.x - blockSize; x <= point.x + blockSize; x += blockSize) {
-			for(int y = point.y - blockSize; y <= point.y + blockSize; y += blockSize) {
-				result[i++] = new Point(x, y);
-			}
-		}
-		return result;
-	}
-	
 	public static Point[] getBlastRadius(Point point, int blockSize, int radius) {
 		if(radius == 0) {
-			return new Point[] {};
+			return new Point[] {new Point(point.x, point.y + blockSize)};
 		} else if(radius == 1) {
 			return new Point[] {new Point(point.x, point.y - blockSize),
 					new Point(point.x - blockSize, point.y),
 					new Point(point.x + blockSize, point.y),
 					new Point(point.x, point.y + blockSize)};
 		} else if(radius == 2) {
-			return getThreeByThreeAround(point, blockSize);
-		} else if((radius % 2) == 1) {
+			Point[] result = new Point[9];
+			int i = 0;
+			for(int x = point.x - blockSize; x <= point.x + blockSize; x += blockSize) {
+				for(int y = point.y - blockSize; y <= point.y + blockSize; y += blockSize) {
+					result[i++] = new Point(x, y);
+				}
+			}
+			return result;
+		} else if(radius > 2){
 			/*
 			 * 2 -> 9 = 3^2, 3 -> 25 = 5^2
 			 */
 			int i = 0;
-			Point[] result = new Point[(int)Math.pow((radius * 2) - 1, 2)];
+			Point[] result = new Point[(radius * 2 + 1) * (radius * 2 + 1)]; // Trust me, it works.
 			for(int x = (point.x - (blockSize * radius));
 					x <= point.x + (blockSize * radius); x += blockSize) {
 				for(int y = (point.y - (blockSize * radius));
@@ -81,9 +72,10 @@ public abstract class Helper {
 					result[i++] = new Point(x, y);
 				}
 			}
+			if(OptionsManager.getInstance().isVerbose()) System.out.println("[Helper - getBlastRadius()] i was " + i);
 			return result;
 		} else {
-			return new Point[] {new Point(point.x, point.y + blockSize)};
+			return null;
 		}
 	}
 }

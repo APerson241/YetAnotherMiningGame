@@ -158,4 +158,68 @@ public class Robot implements Serializable {
 	public void sellDynamite() {
 		dynamite--;
 	}
+
+	/* (non-Javadoc)
+	 * @see java.lang.Object#hashCode()
+	 */
+	@Override
+	public int hashCode() {
+		final int prime = 31;
+		int result = 1;
+		result = prime * result + (dead ? 1231 : 1237);
+		result = prime * result + dynamite;
+		result = prime * result + dynamiteTier;
+		result = prime * result
+				+ ((listeners == null) ? 0 : listeners.hashCode());
+		result = prime * result
+				+ ((location == null) ? 0 : location.hashCode());
+		result = prime * result + reserves;
+		result = prime * result
+				+ ((storedLocation == null) ? 0 : storedLocation.hashCode());
+		result = prime * result + ((tank == null) ? 0 : tank.hashCode());
+		return result;
+	}
+
+	/* (non-Javadoc)
+	 * @see java.lang.Object#equals(java.lang.Object)
+	 */
+	@Override
+	public boolean equals(Object obj) {
+		if (this == obj)
+			return true;
+		if (obj == null)
+			return false;
+		if (getClass() != obj.getClass())
+			return false;
+		Robot other = (Robot) obj;
+		if (dead != other.dead)
+			return false;
+		if (dynamite != other.dynamite)
+			return false;
+		if (dynamiteTier != other.dynamiteTier)
+			return false;
+		if (listeners == null) {
+			if (other.listeners != null)
+				return false;
+		} else if (!listeners.equals(other.listeners))
+			return false;
+		if (location == null) {
+			if (other.location != null)
+				return false;
+		} else if (!location.equals(other.location))
+			return false;
+		if (reserves != other.reserves)
+			return false;
+		if (storedLocation == null) {
+			if (other.storedLocation != null)
+				return false;
+		} else if (!storedLocation.equals(other.storedLocation))
+			return false;
+		if (tank == null) {
+			if (other.tank != null)
+				return false;
+		} else if (!tank.equals(other.tank))
+			return false;
+		return true;
+	}
 }

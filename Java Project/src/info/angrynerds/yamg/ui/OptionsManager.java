@@ -29,6 +29,7 @@ public class OptionsManager {
 	private JCheckBox autoscrollStatus;
 	private JCheckBox gravityOnStatus;
 	private JCheckBox bossStatus;
+	private JCheckBox scrollStatus;
 	private JCheckBox printMouseCoords;
 	private JCheckBox verbose;
 	// CHEATS
@@ -41,9 +42,15 @@ public class OptionsManager {
 	
 	private GameModel model;
 	
+	private static OptionsManager instance;
+	
 	public OptionsManager(GameModel model) {
 		this.model = model;
 		cheats = new ArrayList<String>();
+	}
+	
+	public static OptionsManager getInstance() {
+		return instance;
 	}
 	
 	private void buildGUI() {
@@ -126,6 +133,9 @@ public class OptionsManager {
 			gravityOnStatus = new JCheckBox("Gravity on/off on status bar");
 			gravityOnStatus.addActionListener(new ButtonListener());
 			debugOptions.add(gravityOnStatus);
+			scrollStatus = new JCheckBox("Scroll position on/off on status bar");
+			scrollStatus.addActionListener(new ButtonListener());
+			debugOptions.add(scrollStatus);
 			printMouseCoords = new JCheckBox("Print mouse coordinates to System.out");
 			printMouseCoords.addActionListener(new ButtonListener());
 			debugOptions.add(printMouseCoords);
@@ -278,6 +288,11 @@ public class OptionsManager {
 		return bossStatus.isSelected();
 	}
 	
+	public boolean isScrollPositionOnStatus() {
+		if(frame == null) buildGUI();
+		return scrollStatus.isSelected();
+	}
+	
 	public boolean isVerbose() {
 		if(verbose == null) buildGUI();
 		return verbose.isSelected();
@@ -311,11 +326,8 @@ public class OptionsManager {
 		}
 
 		public void mouseClicked(MouseEvent arg0) {}
-
 		public void mouseEntered(MouseEvent arg0) {}
-
 		public void mouseExited(MouseEvent arg0) {}
-
 		public void mousePressed(MouseEvent arg0) {}
 
 		public void mouseReleased(MouseEvent arg0) {

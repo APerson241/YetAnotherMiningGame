@@ -6,7 +6,7 @@ import info.angrynerds.yamg.ui.*;
 import info.angrynerds.yamg.utils.*;
 
 public class Yamg {
-	public static final String VERSION = "Alpha Version 1.2.4";
+	public static final String VERSION = "Alpha Version 1.2.5";
 	
 	private LoadManager load;
 	private GameModel model;

@@ -80,7 +80,7 @@ public class Shop {
 			JPanel fillUp = new JPanel();
 				fillUp.add(new JLabel("Amount of fuel:"));
 				String[] choices = new String[] {"$1", "$5", "$10", "$20", "Fill 'er up"};
-				s.fuelBox = new JComboBox(choices);
+				s.fuelBox = new JComboBox<String>(choices);
 					s.fuelBox.addActionListener(new ButtonListener());
 					s.fuelBox.setSelectedIndex(4);
 				fillUp.add(s.fuelBox);
@@ -300,12 +300,12 @@ public class Shop {
 					model.getRobot().addDynamite();
 				} else if(button.getText().equals("Sell Some Dynamite ($140)")) {
 					model.getBankAccount().deposit(140);
-					if(!model.isInfiniteDynamite()) {
+					if(!model.isInfiniteDynamite())
 						model.getRobot().sellDynamite();
-					}
 				} else if(button.getText().equals(s.unlockPortalButton.getText())) {
 					model.getBankAccount().withdraw(20000);
 					model.HAS_PORTAL = true;
+					DebugConsole.getInstance().println("[Shop/ButtonListener/actionPerformed] PORTAL.");
 				}
 				model.doRefresh();
 			} else if(arg0.getSource() instanceof JComboBox) {

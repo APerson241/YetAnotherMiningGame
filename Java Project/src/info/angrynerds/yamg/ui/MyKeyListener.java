@@ -57,8 +57,7 @@ public class MyKeyListener implements KeyListener {
 		}
 		if(model.getRobotLocation().y >= GameModel.GROUND_LEVEL) {	// We should add a hole.
 			model.addHole(model.getRobotLocation());
-			if(view.getOptions().isVerbose()) 
-				System.out.println("Added hole: " + model.getRobot().getLocation());
+			DebugConsole.getInstance().println("Added hole: " + model.getRobot().getLocation());
 		}
 		if(model.getShop().getBounds().contains(model.getRobotLocation())) {
 			view.getFlyups().setPermanentFlyUp("Press S to open Shop");

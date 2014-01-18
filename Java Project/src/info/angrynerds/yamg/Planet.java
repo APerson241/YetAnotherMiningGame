@@ -1,6 +1,7 @@
 package info.angrynerds.yamg;
 
 import info.angrynerds.yamg.robot.*;
+import info.angrynerds.yamg.utils.DebugConsole;
 
 import java.awt.*;
 import java.io.Serializable;
@@ -102,8 +103,7 @@ public class Planet implements Serializable {
 	}
 
 	public int getBOTTOM() {
-		if(model.getView().getOptions().isVerbose())
-			System.out.println("[Planet.getBOTTOM()] BOTTOM = " + SIZE.height);
+		DebugConsole.getInstance().println("[Planet.getBOTTOM()] BOTTOM = " + SIZE.height);
 		return SIZE.height;
 	}
 	

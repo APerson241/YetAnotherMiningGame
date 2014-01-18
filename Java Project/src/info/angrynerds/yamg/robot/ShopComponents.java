@@ -6,7 +6,7 @@ class ShopComponents {
 	// FUEL
 	public JProgressBar fuelBar = new JProgressBar();
 	public JLabel fuelLabel;
-	public JComboBox fuelBox;
+	public JComboBox<String> fuelBox;
 	public JButton fuelButton;
 	
 	// RESERVE

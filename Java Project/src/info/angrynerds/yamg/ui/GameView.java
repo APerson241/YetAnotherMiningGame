@@ -61,14 +61,19 @@ public class GameView {
 			JMenuItem optionsMenuItem = new JMenuItem("Preferences...");
 				optionsMenuItem.addActionListener(new MenuBarListener());
 			fileMenu.add(optionsMenuItem);
-			JMenuItem cheatMenuItem = new JMenuItem("Enter a cheat code...");
-				cheatMenuItem.addActionListener(new MenuBarListener());
-			fileMenu.add(cheatMenuItem);
 			fileMenu.addSeparator();
 			JMenuItem exitMenuItem = new JMenuItem("Quit");
 				exitMenuItem.addActionListener(new MenuBarListener());
 			fileMenu.add(exitMenuItem);
 		menuBar.add(fileMenu);
+		JMenu advancedMenu = new JMenu("Advanced");
+			JMenuItem cheatMenuItem = new JMenuItem("Enter a cheat code...");
+				cheatMenuItem.addActionListener(new MenuBarListener());
+			advancedMenu.add(cheatMenuItem);
+			JMenuItem debugMenuItem = new JMenuItem("Toggle debug window");
+				debugMenuItem.addActionListener(new MenuBarListener());
+			advancedMenu.add(debugMenuItem);
+		menuBar.add(advancedMenu);
 		JMenu helpMenu = new JMenu("Help");
 			JMenuItem aboutMenuItem = new JMenuItem("About YAMG...");
 				aboutMenuItem.addActionListener(new MenuBarListener());
@@ -113,7 +118,7 @@ public class GameView {
 	}
 	
 	public void refreshView() {
-		if(options.isVerbose()) System.out.println("[GameView] Refreshing view...");
+		DebugConsole.getInstance().println("[GameView/refreshView()] Refreshing view...");
 		panel.repaint();
 		statusBar.setText(getStatusBarText());
 		model.getShop().update();
@@ -232,6 +237,8 @@ public class GameView {
 					model.getView().setVisible(false);
 					Yamg controller = model.getController();
 					controller.runApplication();
+				} else if(item.getText().equals("Toggle debug window")) {
+					DebugConsole.getInstance().toggleVisible();
 				}
 			}
 			model.doRefresh();
@@ -267,7 +274,7 @@ public class GameView {
 		public void run() {
 			while(isRefreshing) {
 				if(!options.isRefresh()) {
-					System.out.println("BREAK!");
+					DebugConsole.getInstance().println("[GameView/RefreshJob/run()] BREAK!");
 					isRefreshing = false;
 					refreshView();
 				}

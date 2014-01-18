@@ -31,7 +31,6 @@ public class OptionsManager {
 	private JCheckBox bossStatus;
 	private JCheckBox scrollStatus;
 	private JCheckBox printMouseCoords;
-	private JCheckBox verbose;
 	// CHEATS
 	private JPanel cheatPanel;
 	private JCheckBox daniel;
@@ -139,9 +138,6 @@ public class OptionsManager {
 			printMouseCoords = new JCheckBox("Print mouse coordinates to System.out");
 			printMouseCoords.addActionListener(new ButtonListener());
 			debugOptions.add(printMouseCoords);
-			verbose = new JCheckBox("Debug info to System.out");
-			verbose.addActionListener(new ButtonListener());
-			debugOptions.add(verbose);
 		cheatPanel = new JPanel();
 			daniel = new JCheckBox("???");
 			daniel.addActionListener(new ButtonListener());
@@ -291,11 +287,6 @@ public class OptionsManager {
 	public boolean isScrollPositionOnStatus() {
 		if(frame == null) buildGUI();
 		return scrollStatus.isSelected();
-	}
-	
-	public boolean isVerbose() {
-		if(verbose == null) buildGUI();
-		return verbose.isSelected();
 	}
 	
 	public int getRefreshDelay() {

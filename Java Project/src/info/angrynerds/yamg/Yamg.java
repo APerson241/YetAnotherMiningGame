@@ -20,7 +20,7 @@ public class Yamg {
 	public void go() {
 		welcome = new WelcomeView(this);
 		welcome.showWindow();
-//		System.out.println("End of go()");
+		DebugConsole.getInstance().println("[Yamg/go()] End of go()");
 	}
 	
 	public void runApplication() {

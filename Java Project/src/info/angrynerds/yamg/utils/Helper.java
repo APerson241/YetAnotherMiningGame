@@ -1,7 +1,5 @@
 package info.angrynerds.yamg.utils;
 
-import info.angrynerds.yamg.ui.OptionsManager;
-
 import java.awt.*;
 
 public abstract class Helper {
@@ -72,7 +70,7 @@ public abstract class Helper {
 					result[i++] = new Point(x, y);
 				}
 			}
-			if(OptionsManager.getInstance().isVerbose()) System.out.println("[Helper - getBlastRadius()] i was " + i);
+			DebugConsole.getInstance().println("[Helper - getBlastRadius()] i was " + i);
 			return result;
 		} else {
 			return null;

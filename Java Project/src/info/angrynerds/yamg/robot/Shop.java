@@ -2,6 +2,7 @@ package info.angrynerds.yamg.robot;
 
 import info.angrynerds.yamg.GameModel;
 import info.angrynerds.yamg.utils.Configurables;
+import info.angrynerds.yamg.utils.DebugConsole;
 import info.angrynerds.yamg.utils.Helper;
 
 import java.awt.*;

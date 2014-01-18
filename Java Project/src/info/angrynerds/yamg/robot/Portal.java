@@ -30,6 +30,8 @@ public class Portal {
 
 	final int HALO = 5; // Width, in pixels, of halo
 	String[] PLANET_NAMES = new String[] {"Amel", "Antar", "Avalon", "Belzagor", "Cyteen", "Ytterby"};
+	Color buttonEnabledColor = Color.getHSBColor(176, 196, 222);
+	Color buttonDisabledColor = Color.GRAY;
 	
 	public Portal(GameModel m) {
 		model = m;
@@ -124,10 +126,14 @@ public class Portal {
 		g.drawString("Mr. Portal", window.x + (window.width -
 				g.getFontMetrics().stringWidth("Mr. Portal"))/2, window.y + 25);
 		//Buttons
+		int money = model.getBankAccount().getMoney();
 		paintButton(g, "Exit", exitButton, new Color(172, 0, 0));
-		paintButton(g, "Scan ($" + scanPrice + ")", scanButton, Color.GRAY);
-		paintButton(g, "Colonize ($" + Configurables.COLONIZE_PRICE + ")", colonizeButton, Color.GRAY);
-		paintButton(g, "Travel ($" + Configurables.TRAVEL_PRICE + ")", travelButton, Color.GRAY);
+		paintButton(g, "Scan ($" + scanPrice + ")", scanButton,
+				(money>=scanPrice)?buttonEnabledColor:buttonDisabledColor);
+		paintButton(g, "Colonize ($" + Configurables.COLONIZE_PRICE + ")", colonizeButton,
+				(money>=Configurables.COLONIZE_PRICE)?buttonEnabledColor:buttonDisabledColor);
+		paintButton(g, "Travel ($" + Configurables.TRAVEL_PRICE + ")", travelButton,
+				(money>=Configurables.TRAVEL_PRICE)?buttonEnabledColor:buttonDisabledColor);
 		// Galaxy pane
 		g.fillRect(galaxyPane.x, galaxyPane.y, galaxyPane.width, galaxyPane.height);
 		int x = 0, y = 0, dx = 0, dy = -1, t = (int)Math.ceil(Math.sqrt(planets.size())); // For making them appear in a spiral
@@ -172,15 +178,20 @@ public class Portal {
 			model.getBankAccount().withdraw(scanPrice);
 			scanPrice += Configurables.BASE_SCAN_PRICE;
 		}
-		if(colonizeButton.contains(point) && model.getBankAccount().getMoney() >= 500 &&
-				selectedPlanet != null && !selectedPlanet.isColonized()) {
+		if(colonizeButton.contains(point) && model.getBankAccount().getMoney() >=
+				Configurables.COLONIZE_PRICE && selectedPlanet != null &&
+				!selectedPlanet.isColonized()) {
 			selectedPlanet.setColonized(true);
-			model.getBankAccount().withdraw(500);
+			model.getBankAccount().withdraw(Configurables.COLONIZE_PRICE);
 		}
-		for(Planet p:planets) {
-			if(hitboxes.containsKey(p) && hitboxes.get(p).contains(point)) {
-				selectedPlanet = p; return;
+		for(Planet planet:planets) {
+			if(hitboxes.containsKey(planet) && hitboxes.get(planet).contains(point)) {
+				selectedPlanet = planet;
+				return;
 			}
+		}
+		if(selectedPlanet != null && galaxyPane.contains(point)) {
+			selectedPlanet = null;
 		}
 	}
 	

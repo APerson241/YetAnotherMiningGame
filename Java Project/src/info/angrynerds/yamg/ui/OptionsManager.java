@@ -12,6 +12,9 @@ import javax.swing.*;
 import javax.swing.event.ChangeEvent;
 import javax.swing.event.ChangeListener;
 
+/**
+ * Along with options, also takes care of cheat codes.
+ */
 public class OptionsManager {
 	private JFrame frame;
 	private JCheckBox gravity;
@@ -256,6 +259,7 @@ public class OptionsManager {
 					String.format("Cheat %s successfully added.  You get %s.%s",
 					cheat, result, (firstTime?"\nNote: You can turn cheats off in Preferences."
 					:"")), "You Cheat!", JOptionPane.DEFAULT_OPTION, 1);
+			DebugConsole.getInstance().println("[OptionsManager/addCheat] Cheat " + cheat + " added.");
 		}
 	}
 

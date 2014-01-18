@@ -31,7 +31,7 @@ public class DebugConsole {
 		area.setEditable(false);
 		area.setFont(new Font(Font.MONOSPACED, Font.PLAIN, 12));
 		area.setText("~~~~~ YAMG Debug Console ~~~~~");
-		mainPanel.add(area);
+		mainPanel.add(new JScrollPane(area));
 		frame.getContentPane().add(mainPanel, BorderLayout.CENTER);
 		frame.setBounds(Helper.getCenteredBounds(600, 500));
 	}

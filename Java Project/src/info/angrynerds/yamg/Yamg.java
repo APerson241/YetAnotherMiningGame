@@ -2,6 +2,8 @@ package info.angrynerds.yamg;
 
 import java.awt.*;
 
+import javax.swing.JOptionPane;
+
 import info.angrynerds.yamg.ui.*;
 import info.angrynerds.yamg.utils.*;
 
@@ -14,7 +16,12 @@ public class Yamg {
 	private WelcomeView welcome;
 	
 	public static void main(String[] args) {
+		try {
 		new Yamg().go();
+		} catch(Exception ex) {
+			JOptionPane.showConfirmDialog(null,
+					"There was an error!\n" + ex.getMessage(), "Error!", JOptionPane.ERROR_MESSAGE);
+		}
 	}
 	
 	public void go() {

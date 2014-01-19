@@ -3,6 +3,7 @@ package info.angrynerds.yamg.ui;
 import info.angrynerds.yamg.*;
 import info.angrynerds.yamg.robot.Element;
 import info.angrynerds.yamg.utils.Configurables;
+import info.angrynerds.yamg.utils.DebugConsole;
 import info.angrynerds.yamg.utils.Direction;
 import info.angrynerds.yamg.utils.Helper;
 
@@ -141,6 +142,10 @@ public class GamePanel extends JPanel {
 			break;
 		case DOWN:
 			if(yOffset < 0) yOffset += i;
+			break;
+		default:
+			DebugConsole.getInstance().println(
+					"[GameView/canScroll()] Invalid scroll direction: " + up.toString());
 			break;
 		}
 	}

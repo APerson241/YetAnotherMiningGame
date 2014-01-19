@@ -168,6 +168,10 @@ public class GameView {
 			return robot.y <= (topBorder + 50);
 		case UP:
 			return robot.y >= (bottomBorder - 50);
+		default:
+			DebugConsole.getInstance().println(
+					"[GameView/canScroll()] Invalid scroll direction: " + scrollDirection.toString());
+			break;
 		}
 		return false;
 	}

@@ -108,7 +108,7 @@ public class Planet implements Serializable {
 	}
 	
 	public void addHole(Point point) {
-		holes.add(new Rectangle(point.x, point.y, GameModel.UNIT, GameModel.UNIT));
+		holes.add(new Rectangle(point.x, point.y, GameModel.getUnit(), GameModel.getUnit()));
 	}
 	
 	public void addElement(Element element) {
@@ -116,13 +116,13 @@ public class Planet implements Serializable {
 	}
 	
 	public void addRock(Point point) {
-		rocks.add(new Rectangle(point.x, point.y, GameModel.UNIT, GameModel.UNIT));
+		rocks.add(new Rectangle(point.x, point.y, GameModel.getUnit(), GameModel.getUnit()));
 	}
 	
-	public Element removeElement(Point location) {
+	public Element removeElement(Rectangle bounds) {
 		Element deleted = null;
 		for(Element element:elements) {
-			if(element.getLocation().equals(location)) {
+			if(new Rectangle(element.getLocation(), GameModel.getSquareUnit()).intersects(bounds)) {
 				deleted = element;
 				break;
 			}
@@ -151,7 +151,7 @@ public class Planet implements Serializable {
 	}
 	
 	private void initializeElements() {
-		int number = ElementType.values().length * 10 + (GameModel.UNIT * 10);
+		int number = ElementType.values().length * 10 + (GameModel.getUnit() * 10);
 		for(ElementType type:ElementType.values()) {
 			for(int i = 0; i < number; i++) {
 				addElement(new Element(type,
@@ -165,25 +165,25 @@ public class Planet implements Serializable {
 		for(int i = 0; i < 250; i++) {
 			Point point = getRandomLocationOnGrid(525);
 			if(getElements().contains(new Rectangle(point.x,
-					point.y, GameModel.UNIT, GameModel.UNIT))) {
+					point.y, GameModel.getUnit(), GameModel.getUnit()))) {
 				i++;
 				continue;
 			} else {
 				addRock(point);
 			}
 		}
-		int UNIT4 = GameModel.UNIT * 4;	// Should be 100 if UNIT is 25
+		int UNIT4 = GameModel.getUnit() * 4;	// Should be 100 if UNIT is 25
 		addRock(new Point(UNIT4 * 3, UNIT4 * 2));	// Below the Shop
-		addRock(new Point(UNIT4 * 3 + GameModel.UNIT, UNIT4 * 2));
-		addRock(new Point(UNIT4 * 3 + GameModel.UNIT * 2, UNIT4 * 2));
+		addRock(new Point(UNIT4 * 3 + GameModel.getUnit(), UNIT4 * 2));
+		addRock(new Point(UNIT4 * 3 + GameModel.getUnit() * 2, UNIT4 * 2));
 	}
 	
 	private Point getRandomLocationOnGrid(int offset) {
 		Random random = new Random();
 		int xLimit = SIZE.width;
 		int yLimit = SIZE.height;
-		int x = random.nextInt((int) xLimit/GameModel.UNIT) * GameModel.UNIT;
-		int y = (random.nextInt((int) yLimit/GameModel.UNIT) * GameModel.UNIT) + offset;
+		int x = random.nextInt((int) xLimit/GameModel.getUnit()) * GameModel.getUnit();
+		int y = (random.nextInt((int) yLimit/GameModel.getUnit()) * GameModel.getUnit()) + offset;
 		return new Point(x, y);
 	}
 	
@@ -194,7 +194,7 @@ public class Planet implements Serializable {
 	public static int getStandardWidth() {
 		if (width == -1) {
 			int x = Yamg.getFrameBounds().width;
-			x -= (x % GameModel.UNIT);
+			x -= (x % GameModel.getUnit());
 			width = x;
 		}
 		return width;

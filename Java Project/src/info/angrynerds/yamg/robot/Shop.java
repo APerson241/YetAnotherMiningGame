@@ -20,7 +20,7 @@ public class Shop {
 	
 	public Shop(GameModel m) {
 		model = m;
-		int UNIT = GameModel.UNIT;
+		int UNIT = GameModel.getUnit();
 		bounds = new Rectangle(UNIT * 12, UNIT * 5, UNIT * 3, UNIT * 3);
 		s = new ShopComponents();
 	}
@@ -40,8 +40,8 @@ public class Shop {
 		g.setColor(Color.BLACK);
 		Font original = g.getFont();
 		g.setFont(new Font(Font.SANS_SERIF, Font.BOLD, 24));
-		g.drawString("SHOP", bounds.x + ((int)(GameModel.UNIT / 5)),
-				bounds.y + (GameModel.UNIT * 2) + yOffset);
+		g.drawString("SHOP", bounds.x + ((int)(GameModel.getUnit() / 5)),
+				bounds.y + (GameModel.getUnit() * 2) + yOffset);
 		g.setFont(original);
 	}
 	

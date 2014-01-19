@@ -57,7 +57,7 @@ public class FlyUpsManager {
 		if(!permanentFlyUp.equals("")) yCoord += 20;
 		for(FlyUp data:flyups) {
 			float alpha = 1.0F;
-			if((data.timeSinceCreation() >= 2000) && (data.timeSinceCreation() <= 3000)) {
+			if((data.timeSinceCreation() >= 2000) && (data.timeSinceCreation() < 3000)) {
 				alpha = 1.0F - ((data.timeSinceCreation() - 2000.0F)/1000.0F);
 			}
 //			System.out.println("-\t- rgb: " + rgb + ", alpha: " + alpha);
@@ -94,6 +94,9 @@ public class FlyUpsManager {
 			return (this.timeStartedUp + 2000) >= (new Date()).getTime();
 		}
 		
+		/**
+		 * @return Time since creation, in milliseconds.
+		 */
 		public long timeSinceCreation() {
 			return (new Date()).getTime() - timeStartedUp;
 		}

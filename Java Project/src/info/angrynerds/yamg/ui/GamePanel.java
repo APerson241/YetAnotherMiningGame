@@ -76,17 +76,17 @@ public class GamePanel extends JPanel {
 		g.setColor(Color.LIGHT_GRAY);
 		for(Rectangle rect:model.getHoles())
 			if(isYCoordInsideWindow(rect.y))
-				g.fillRect(rect.x, rect.y + yOffset, GameModel.UNIT, GameModel.UNIT);
+				g.fillRect(rect.x, rect.y + yOffset, GameModel.getUnit(), GameModel.getUnit());
 		drawRobot(g);
 		g.setColor(Color.BLACK);
 		for(Rectangle rect:model.getRocks())
 			if(isYCoordInsideWindow(rect.y))
-				g.fillRect(rect.x, rect.y + yOffset, GameModel.UNIT, GameModel.UNIT);
+				g.fillRect(rect.x, rect.y + yOffset, GameModel.getUnit(), GameModel.getUnit());
 		for(Element elem:model.getElements()) {
 			if(isYCoordInsideWindow(elem.getLocation().y)) {
 				g.setColor(elem.getColor());
 				g.fillOval(elem.getLocation().x, elem.getLocation().y + yOffset,
-					GameModel.UNIT, GameModel.UNIT);
+					GameModel.getUnit(), GameModel.getUnit());
 			}
 		}
 		flyups.paint(g, yOffset);
@@ -113,12 +113,12 @@ public class GamePanel extends JPanel {
 			int x = model.getRobotLocation().x;
 			int y = model.getRobotLocation().y;
 			g.setColor(new Color(1, 1, 1, 0.75F));
-			g.fillRect(x - GameModel.UNIT - 5, y - GameModel.UNIT - 30, 190, 50);
+			g.fillRect(x - GameModel.getUnit() - 5, y - GameModel.getUnit() - 30, 190, 50);
 			g.setColor(Color.BLACK);
-			g.drawRect(x - GameModel.UNIT - 5, y - GameModel.UNIT - 30, 190, 50);
+			g.drawRect(x - GameModel.getUnit() - 5, y - GameModel.getUnit() - 30, 190, 50);
 			g.setFont(new Font(Font.SANS_SERIF, Font.BOLD, 20));
-			g.drawString("Use the arrow keys", x - GameModel.UNIT, y - GameModel.UNIT - 10);
-			g.drawString("to move the robot!", x - GameModel.UNIT, y - GameModel.UNIT + 10);
+			g.drawString("Use the arrow keys", x - GameModel.getUnit(), y - GameModel.getUnit() - 10);
+			g.drawString("to move the robot!", x - GameModel.getUnit(), y - GameModel.getUnit() + 10);
 		}
 		drawHUD(g);
 	}
@@ -130,7 +130,7 @@ public class GamePanel extends JPanel {
 	
 	public void drawRobot(Graphics g, Point position) {
 		g.fillRoundRect(model.getRobotLocation().x, model.getRobotLocation().y + yOffset,
-				GameModel.UNIT, GameModel.UNIT,
+				GameModel.getUnit(), GameModel.getUnit(),
 				9, 9);
 	}
 

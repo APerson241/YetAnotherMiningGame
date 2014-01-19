@@ -27,6 +27,7 @@ public class OptionsManager {
 	private JLabel refreshLabel;
 	private JSlider refreshSlider;
 	private JSlider unitSlider;
+	private JLabel unitLabel;
 	// DEBUGGING
 	private JCheckBox gravityDebugStatus;
 	private JCheckBox autoscrollStatus;
@@ -55,27 +56,22 @@ public class OptionsManager {
 		return instance;
 	}
 	
-	private void buildGUI() {
-		frame = new JFrame("Preferences");
-		JPanel mainPanel = new JPanel();
-		mainPanel.setBorder(BorderFactory.createEmptyBorder(10, 10, 10, 10));
-		mainPanel.setLayout(new BorderLayout());
+	// A helper method.
+	private JPanel buildTopPanel() {
+		JPanel top = new JPanel();
+		top.setLayout(new BoxLayout(top, BoxLayout.Y_AXIS));
+		// --------- GRAVITY PANEL ---------
 		JPanel gravityPanel = new JPanel();
 		gravityPanel.setBorder(BorderFactory.createTitledBorder("Gravity"));
-		GridLayout layout = new GridLayout(2, 2);
-		layout.setHgap(5);
-		layout.setVgap(5);
-		gravityPanel.setLayout(layout);
-		gravityPanel.add(new JLabel("Gravity"));
 		gravity = new JCheckBox("Enable Gravity");
 			gravity.addActionListener(new ButtonListener());
 			gravity.setSelected(false);
 		gravityPanel.add(gravity);
-		gravityLabel = new JLabel("Gravity Delay: 1000 ms");
+		gravityLabel = new JLabel("");
 		gravityPanel.add(gravityLabel);
 		gravityDelay = new JSlider();
 			gravityDelay.addChangeListener(new GravityListener());
-			gravityDelay.setMinimum(50); //NOTE: In my opinion, minimum should be lower.
+			gravityDelay.setMinimum(50);
 			gravityDelay.setMaximum(2500);
 			gravityDelay.setMajorTickSpacing(200);
 			gravityDelay.setMinorTickSpacing(100);
@@ -84,9 +80,39 @@ public class OptionsManager {
 			gravityDelay.setPaintTicks(true);
 			gravityDelay.setEnabled(false);
 		gravityPanel.add(gravityDelay);
+		top.add(gravityPanel);
+		// --------- UNIT SIZE PANEL ---------
+		JPanel unitPanel = new JPanel();
+		unitPanel.setBorder(BorderFactory.createTitledBorder("Unit Size"));
+		unitLabel = new JLabel("Unit size: 25 (default 25)");
+		unitPanel.add(unitLabel);
+		unitSlider = new JSlider();
+			unitSlider.setMinimum(5);
+			unitSlider.setMaximum(200);
+			unitSlider.setMajorTickSpacing(50);
+			unitSlider.setMinorTickSpacing(5);
+			unitSlider.setValue(25);
+			unitSlider.setPaintTicks(true);
+			unitSlider.setSnapToTicks(true);
+			unitSlider.addChangeListener(new UnitListener());
+			unitSlider.addMouseListener(new UnitListener());
+		unitPanel.add(unitSlider);
+		JButton unitResetButton = new JButton("Reset");
+		unitResetButton.addActionListener(new UnitListener());
+		unitPanel.add(unitResetButton);
+		top.add(unitPanel);
+		return top;
+	}
+	
+	private void buildGUI() {
+		frame = new JFrame("Preferences");
+		JPanel mainPanel = new JPanel();
+		mainPanel.setBorder(BorderFactory.createEmptyBorder(10, 10, 10, 10));
+		mainPanel.setLayout(new BorderLayout());
+		JPanel center = new JPanel(new GridLayout(1, 2));
 		JPanel generalOptions = new JPanel();
 			generalOptions.setBorder(BorderFactory.createTitledBorder("General"));
-			generalOptions.setLayout(new GridLayout(7, 1));
+			generalOptions.setLayout(new BoxLayout(generalOptions, BoxLayout.Y_AXIS));
 			fpsStatus = new JCheckBox("Show FPS on status bar");
 			fpsStatus.setSelected(true);
 			generalOptions.add(fpsStatus);
@@ -94,18 +120,6 @@ public class OptionsManager {
 			autoScroll.addActionListener(new ButtonListener());
 			autoScroll.setSelected(true);
 			generalOptions.add(autoScroll);
-			generalOptions.add(new JLabel("Unit size:"));
-			unitSlider = new JSlider();
-				unitSlider.setMinimum(5);
-				unitSlider.setMaximum(200);
-				unitSlider.setMajorTickSpacing(50);
-				unitSlider.setMinorTickSpacing(5);
-				unitSlider.setValue(25);
-				unitSlider.setPaintTicks(true);
-				unitSlider.setSnapToTicks(true);
-				unitSlider.addChangeListener(new UnitListener());
-				unitSlider.addMouseListener(new UnitListener());
-			generalOptions.add(unitSlider);
 			refresh = new JCheckBox("Refresh Screen");
 			refresh.addActionListener(new ButtonListener());
 			refresh.setSelected(true);
@@ -122,10 +136,10 @@ public class OptionsManager {
 				refreshSlider.setSnapToTicks(true);
 				refreshSlider.setPaintTicks(true);
 			generalOptions.add(refreshSlider);
+		center.add(generalOptions);
 		JPanel debugOptions = new JPanel();
-			debugOptions.setBorder(BorderFactory.createEmptyBorder(5, 5, 5, 5));
+			debugOptions.setBorder(BorderFactory.createTitledBorder("Debugging"));
 			debugOptions.setLayout(new BoxLayout(debugOptions, BoxLayout.Y_AXIS));
-			debugOptions.add(new JLabel("Debugging"));
 			gravityDebugStatus = new JCheckBox("Gravity debug info on status bar");
 			gravityDebugStatus.addActionListener(new ButtonListener());
 			debugOptions.add(gravityDebugStatus);
@@ -141,6 +155,7 @@ public class OptionsManager {
 			printMouseCoords = new JCheckBox("Print mouse coordinates to System.out");
 			printMouseCoords.addActionListener(new ButtonListener());
 			debugOptions.add(printMouseCoords);
+		center.add(debugOptions);
 		cheatPanel = new JPanel();
 			daniel = new JCheckBox("???");
 			daniel.addActionListener(new ButtonListener());
@@ -157,10 +172,9 @@ public class OptionsManager {
 			cheatPanel.add(daniel);
 			cheatPanel.add(kaboom);
 			cheatPanel.add(lulz);
-		mainPanel.add(gravityPanel, BorderLayout.NORTH);
+		mainPanel.add(buildTopPanel(), BorderLayout.NORTH);
 		mainPanel.add(cheatPanel, BorderLayout.SOUTH);
-		mainPanel.add(generalOptions, BorderLayout.EAST);
-		mainPanel.add(debugOptions, BorderLayout.WEST);
+		mainPanel.add(center, BorderLayout.CENTER);
 		frame.getContentPane().add(mainPanel, BorderLayout.CENTER);
 		frame.setBounds(Helper.getCenteredBounds(500, 350));
 	}
@@ -176,6 +190,8 @@ public class OptionsManager {
 				JCheckBox source = (JCheckBox) arg0.getSource();
 				if(source.getText().equals("Enable Gravity")) {
 					gravityDelay.setEnabled(source.isSelected());
+					gravityLabel.setText(source.isSelected()?
+							String.format("Gravity Delay: %d ms", gravityDelay.getValue()):"");
 					model.setGravity(source.isSelected());
 				} else if(source.getText().equals("Enable Autoscroll")) {
 					model.getView().setAutoscroll(source.isSelected());
@@ -304,7 +320,7 @@ public class OptionsManager {
 
 	private class GravityListener implements ChangeListener {
 		public void stateChanged(ChangeEvent arg0) {
-			gravityLabel.setText(String.format("Gravity Delay: %d ms", gravityDelay.getValue()));
+			gravityLabel.setText(gravity.isSelected()?String.format("Gravity Delay: %d ms", gravityDelay.getValue()):"");
 		}
 	}
 	
@@ -314,9 +330,17 @@ public class OptionsManager {
 		}
 	}
 	
-	private class UnitListener implements ChangeListener, MouseListener {
+	private class UnitListener implements ChangeListener, MouseListener, ActionListener {
+		public void actionPerformed(ActionEvent arg0) {
+			GameModel.setUnit(25);
+			unitSlider.setValue(25);
+			unitLabel.setText("Unit size: 25 (default 25)");
+			model.getView().refreshView();
+		}
+		
 		public void stateChanged(ChangeEvent arg0) {
-			GameModel.UNIT = unitSlider.getValue();
+			GameModel.setUnit(unitSlider.getValue());
+			unitLabel.setText("Unit size: " + GameModel.getUnit() + " (default 25)");
 			model.getView().refreshView();
 		}
 
@@ -326,20 +350,8 @@ public class OptionsManager {
 		public void mousePressed(MouseEvent arg0) {}
 
 		public void mouseReleased(MouseEvent arg0) {
-			if(unitSlider.getValue() != 25) {
-				int result = JOptionPane.showConfirmDialog(model.getView().getFrame(),
-						"Are you sure you want to change the unit size?\n" +
-						"Warning: it'll probably screw up the game.  In a big way.",
-						"Warning!", JOptionPane.YES_NO_OPTION);
-				if(result == JOptionPane.YES_OPTION) {
-					GameModel.setUnit(unitSlider.getValue());
-				} else {
-					GameModel.setUnit(25);
-					unitSlider.setValue(25);
-				}
-			} else {
-				GameModel.UNIT = unitSlider.getValue();
-			}
+			GameModel.setUnit(unitSlider.getValue());
+			unitLabel.setText("Unit size: " + GameModel.getUnit() + " (default 25)");
 			model.getView().refreshView();
 		}
 	}

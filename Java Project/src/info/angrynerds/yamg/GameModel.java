@@ -44,7 +44,7 @@ public class GameModel implements PropertyChangeListener, Serializable {
 	/**
 	 * The side of one square.
 	 */
-	public static transient int UNIT = Configurables.DEFAULT_UNIT;
+	private static transient int UNIT = Configurables.DEFAULT_UNIT;
 	public static int GROUND_LEVEL = UNIT * 8;
 	
 	public GameModel(Yamg y) {
@@ -185,8 +185,8 @@ public class GameModel implements PropertyChangeListener, Serializable {
 		return result;
 	}
 	
-	public Element removeElement(Point location) {
-		return currentPlanet.removeElement(location);
+	public Element removeElement(Rectangle bounds) {
+		return currentPlanet.removeElement(bounds);
 	}
 
 	public GameView getView() {
@@ -274,5 +274,19 @@ public class GameModel implements PropertyChangeListener, Serializable {
 		} else if (!robot.equals(other.robot))
 			return false;
 		return true;
+	}
+
+	/**
+	 * @return the unit
+	 */
+	public static int getUnit() {
+		return UNIT;
+	}
+	
+	/**
+	 * @return A Dimension where both sides are UNIT.
+	 */
+	public static Dimension getSquareUnit() {
+		return new Dimension(UNIT, UNIT);
 	}
 }

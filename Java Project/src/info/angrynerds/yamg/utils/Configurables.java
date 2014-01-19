@@ -11,7 +11,7 @@ public abstract class Configurables {
 	/**
 	 * The amount of money you start with.
 	 */
-	public static final int STARTING_MONEY = 20000;
+	public static final int STARTING_MONEY = 100;
 	/**
 	 * The side of one game square.
 	 */

@@ -27,7 +27,7 @@ public class BankAccount implements Serializable {
 	}
 	
 	public BankAccount() {
-		this(500);
+		this(Configurables.STARTING_MONEY);
 	}
 	
 	public int getMoney() {

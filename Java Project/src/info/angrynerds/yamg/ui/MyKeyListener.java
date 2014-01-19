@@ -45,10 +45,10 @@ public class MyKeyListener implements KeyListener {
 		allowedToMove &= model.canRobotMove(direction);
 		allowedToMove &= !model.isLocked();
 		if(allowedToMove) {
-			model.getRobot().move(GameModel.UNIT, direction);
+			model.getRobot().move(GameModel.getUnit(), direction);
 			if(view.getAutoscroll() && view.canScroll(scrollDirection))
-				view.getPanel().scroll(scrollDirection, GameModel.UNIT);
-			Element el = model.removeElement(model.getRobotLocation());
+				view.getPanel().scroll(scrollDirection, GameModel.getUnit());
+			Element el = model.removeElement(model.getRobot().getRect());
 			if(el != null) {
 				view.addFlyUp("+ $" + el.getType().getPrice());
 				model.doRefresh();
@@ -82,9 +82,9 @@ public class MyKeyListener implements KeyListener {
 				view.refreshView();
 			}
 		} else if(keyCode == KeyEvent.VK_J) {
-			view.getPanel().scroll(Direction.DOWN, GameModel.UNIT);
+			view.getPanel().scroll(Direction.DOWN, GameModel.getUnit());
 		} else if(keyCode == KeyEvent.VK_M) {
-			view.getPanel().scroll(Direction.UP, GameModel.UNIT);
+			view.getPanel().scroll(Direction.UP, GameModel.getUnit());
 		} else if((keyCode == KeyEvent.VK_R) && (model.getRobot().getReserves() >= 1)) {
 			if(model.getRobot().getFuelTank().isFull()) {
 				view.addFlyUp("Tank is already full!");
@@ -92,7 +92,7 @@ public class MyKeyListener implements KeyListener {
 				model.getRobot().useReserve();
 				model.getRobot().getFuelTank().setFuelLevel(
 						model.getRobot().getFuelTank().getFuelCapacity());
-				view.addFlyUp("Used reserve fuel tank");
+				view.addFlyUp("Used reserve fuel tank (" + model.getRobot().getReserves() + " left)");
 			}
 		} else if(keyCode == KeyEvent.VK_D) {
 			if(model.getRobotLocation().y <= GameModel.GROUND_LEVEL) {
@@ -102,15 +102,15 @@ public class MyKeyListener implements KeyListener {
 			} else {
 				if(!model.isInfiniteDynamite()) model.getRobot().useDynamite();
 				for(Point point:Helper.getBlastRadius(model.getRobotLocation(),
-						GameModel.UNIT, model.getRobot().getDynamiteTier())) {
+						GameModel.getUnit(), model.getRobot().getDynamiteTier())) {
 					model.addHole(point);
 					if(model.getRocks().contains(new Rectangle(point.x,
-							point.y, GameModel.UNIT, GameModel.UNIT))) {
+							point.y, GameModel.getUnit(), GameModel.getUnit()))) {
 						model.getRocks().remove(new Rectangle(point.x,
-								point.y, GameModel.UNIT, GameModel.UNIT));
+								point.y, GameModel.getUnit(), GameModel.getUnit()));
 					}
 				}
-				view.addFlyUp("Used dynamite");
+				view.addFlyUp("Used dynamite (" + (model.isInfiniteDynamite()?"Infinity":model.getRobot().getDynamite()) + " left)");
 			}
 		} else if((keyCode == KeyEvent.VK_ENTER) && (model.getRobot().isDead())) {
 			view.setVisible(false);

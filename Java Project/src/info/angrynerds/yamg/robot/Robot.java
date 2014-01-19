@@ -24,7 +24,7 @@ public class Robot implements Serializable {
 	private List<PropertyChangeListener> listeners;
 	
 	public Robot() {
-		location = new Rectangle(50, 175, GameModel.UNIT, GameModel.UNIT);
+		location = new Rectangle(50, 175, GameModel.getUnit(), GameModel.getUnit());
 		tank = new FuelTank();
 		listeners = new ArrayList<PropertyChangeListener>();
 	}

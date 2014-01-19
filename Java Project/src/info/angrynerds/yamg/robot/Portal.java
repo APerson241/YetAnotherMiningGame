@@ -35,7 +35,7 @@ public class Portal {
 	
 	public Portal(GameModel m) {
 		model = m;
-		int UNIT = GameModel.UNIT;
+		int UNIT = GameModel.getUnit();
 		bounds = new Rectangle(UNIT * 24, UNIT * 5, UNIT * 3, UNIT * 3);
 		planets = new ArrayList<Planet>();
 		hitboxes = new HashMap<Planet, Rectangle>();
@@ -76,11 +76,11 @@ public class Portal {
 		g.setColor(Color.BLACK);
 		Font original = g.getFont();
 		g.setFont(new Font(Font.SANS_SERIF, Font.BOLD, 24));
-		g.drawString("REAL", bounds.x + ((int)(GameModel.UNIT / 10)),
-				bounds.y + (GameModel.UNIT) + yOffset);
+		g.drawString("REAL", bounds.x + ((int)(GameModel.getUnit() / 10)),
+				bounds.y + (GameModel.getUnit()) + yOffset);
 		g.setFont(new Font(Font.SANS_SERIF, Font.BOLD, 18));
-		g.drawString("ESTATE", bounds.x + ((int) (GameModel.UNIT / 10)),
-				bounds.y + (GameModel.UNIT) + yOffset + 20);
+		g.drawString("ESTATE", bounds.x + ((int) (GameModel.getUnit() / 10)),
+				bounds.y + (GameModel.getUnit()) + yOffset + 20);
 		g.setFont(original);
 	}
 	
@@ -136,12 +136,14 @@ public class Portal {
 				(money>=Configurables.TRAVEL_PRICE)?buttonEnabledColor:buttonDisabledColor);
 		// Galaxy pane
 		g.fillRect(galaxyPane.x, galaxyPane.y, galaxyPane.width, galaxyPane.height);
-		int x = 0, y = 0, dx = 0, dy = -1, t = (int)Math.ceil(Math.sqrt(planets.size())); // For making them appear in a spiral
+		// For making them appear in a spiral
+		int x = 0, y = 0, dx = 0, dy = -1, t = (int)Math.ceil(Math.sqrt(planets.size()));
 		for(Planet planet : planets) {
-			paintPlanet(g, planet, x * 100, y * 100);
-			if( (x == y) || ((x < 0) && (x == -y)) || ((x > 0) && (x == 1-y))) {
+			if(galaxyPane.intersects(new Rectangle((x * 100) + xOff - 75/2, (y * 100) +
+					yOff - 75/2, 75, 75)))
+				paintPlanet(g, planet, x * 100, y * 100);
+			if((x == y) || ((x < 0) && (x == -y)) || ((x > 0) && (x == 1-y)))
 	            t = dx; dx =- dy; dy = t;
-			}
 	        x += dx; y += dy;
 		}
 	}

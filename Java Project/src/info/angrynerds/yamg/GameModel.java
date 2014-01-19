@@ -90,6 +90,10 @@ public class GameModel implements PropertyChangeListener, Serializable {
 	public Point getRobotLocation() {
 		return robot.getLocation();
 	}
+	
+	public Rectangle getRobotRect() {
+		return robot.getRect();
+	}
 
 	public Robot getRobot() {
 		return robot;

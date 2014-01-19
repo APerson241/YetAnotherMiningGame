@@ -29,6 +29,7 @@ public class Portal {
 	private int scanPrice = Configurables.BASE_SCAN_PRICE;
 
 	final int HALO = 5; // Width, in pixels, of halo
+	final int PLANET_SIZE = 50; // In galaxy pane, width and height of planets
 	String[] PLANET_NAMES = new String[] {"Amel", "Antar", "Avalon", "Belzagor", "Cyteen", "Ytterby"};
 	Color buttonEnabledColor = Color.getHSBColor(176, 196, 222);
 	Color buttonDisabledColor = Color.GRAY;
@@ -85,22 +86,22 @@ public class Portal {
 	}
 	
 	private void paintPlanet(Graphics g, Planet planet, int x_o, int y_o) {
-		int size = (planet.getBOTTOM() == 7000)?75:((planet.getBOTTOM() == 3000)?25:50);
-		int x = x_o + xOff - size / 2, y = y_o + yOff - size / 2;
+		int x = x_o + xOff - PLANET_SIZE / 2, y = y_o + yOff - PLANET_SIZE / 2;
 		if(planet.equals(selectedPlanet)) {
 			g.setColor(Color.WHITE);
-			g.fillOval(x - HALO, y - HALO, size + HALO * 2, size + HALO * 2);
+			g.fillOval(x - HALO, y - HALO, PLANET_SIZE + HALO * 2, PLANET_SIZE + HALO * 2);
 		}
 		g.setColor(planet.containsRobot()?Color.CYAN:(planet.isHomePlanet()?
 				Color.GREEN:(planet.isColonized()?Color.BLUE:Color.DARK_GRAY)));
-		g.fillOval(x, y, size, size);
+		g.fillOval(x, y, PLANET_SIZE, PLANET_SIZE);
 		if(planet.containsRobot() || planet.equals(selectedPlanet)) {
 			int textWidth = g.getFontMetrics().stringWidth(planet.getName());
 			g.setColor(Color.WHITE);
-			g.drawString(planet.getName(), x_o + xOff + (size - textWidth) / 2, y_o + size + yOff + 5);
+			g.drawString(planet.getName(), x_o + xOff + (PLANET_SIZE - textWidth) / 2,
+					y_o + PLANET_SIZE + yOff + 5);
 		}
 		if(!hitboxes.containsKey(planet))
-			hitboxes.put(planet, new Rectangle(x, y, size, size));
+			hitboxes.put(planet, new Rectangle(x, y, PLANET_SIZE, PLANET_SIZE));
 	}
 	
 	private void paintButton(Graphics g, String name, Rectangle box, Color color) {

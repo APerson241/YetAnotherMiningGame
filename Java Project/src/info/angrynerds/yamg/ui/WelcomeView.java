@@ -6,6 +6,7 @@ import java.util.*;
 
 import info.angrynerds.yamg.*;
 import info.angrynerds.yamg.robot.*;
+import info.angrynerds.yamg.robot.Robot;
 import info.angrynerds.yamg.utils.*;
 
 import javax.swing.*;
@@ -20,10 +21,8 @@ public class WelcomeView {
 	private JButton exitButton;
 	
 	private int status = 1; // 1 = animation, 2 = "click to continue", 3 = tutorial
-	private StringBuilder stringShownLoading = new StringBuilder();
 	private StringBuilder stringShownYAMG = new StringBuilder();
 	private StringBuilder stringShownYAMG2 = new StringBuilder();
-	private int xCoordOfLoading = 150;
 	public int tutorialFrame;
 	
 	public WelcomeView(Yamg yamg) {
@@ -43,9 +42,7 @@ public class WelcomeView {
 				exitButton = new JButton("Exit");
 					exitButton.addActionListener(new ButtonListener());
 					exitButton.setEnabled(false);
-				startButton.addKeyListener(new ExitListener());
 				bottom.add(exitButton);
-				bottom.add(new JLabel("  Or, press ESC to exit and ENTER to start."));
 			centerPanel.add(BorderLayout.CENTER, image);
 			centerPanel.add(BorderLayout.SOUTH, bottom);
 		frame.getContentPane().add(centerPanel);
@@ -62,21 +59,6 @@ public class WelcomeView {
 	
 	public void animateWelcome() throws InterruptedException {
 		Thread.sleep(1000);
-		for(char c:"Loading...".toCharArray()) {
-			stringShownLoading.append(c);
-			image.repaint();
-			int sleepVal = 250;
-			sleepVal -= stringShownLoading.length() * 7;
-			Thread.sleep(sleepVal);
-		}
-		Thread.sleep(1000);
-		int i = 1;
-		for(; xCoordOfLoading > -270; xCoordOfLoading -= i++) {
-			image.repaint();
-			Thread.sleep(150 - (i + 5));
-		}
-		image.repaint();
-		Thread.sleep(1000);
 		for(char c:"YAMG".toCharArray()) {
 			stringShownYAMG.append(c);
 			image.repaint();
@@ -88,7 +70,7 @@ public class WelcomeView {
 			Thread.sleep(500);
 		}
 		Thread.sleep(500);
-		status = 2;
+		if(status != 3) status = 2; // If the user clicked to skip it, don't go back to status 2.
 		image.repaint();
 	}
 	
@@ -134,8 +116,6 @@ public class WelcomeView {
 			g.fillRect(0, 0, this.getWidth(), this.getHeight());
 			if(status <= 2) {
 				g.setColor(Color.WHITE);
-				g.setFont(new Font(Font.MONOSPACED, Font.BOLD, 48));
-				drawText(g, xCoordOfLoading, 150, 300, stringShownLoading.toString().split(" "));
 				g.setFont(new Font(Font.MONOSPACED, Font.PLAIN, 200));
 				g.drawString(stringShownYAMG.toString(), 190, 200);
 				g.setFont(new Font(Font.MONOSPACED, Font.BOLD, 48));
@@ -205,15 +185,11 @@ public class WelcomeView {
 		yCoord += 25;
 		g.drawString("You are controlling a robot, represented by a friendly green " +
 				"square:", 23, yCoord);
-		g.setColor(Color.GREEN);
 		yCoord += 10;
-		g.fillRoundRect(23, yCoord, 25, 25, 9, 9);			// Draw sample robot
+		Robot.paint(g, new Point(23, yCoord), GameModel.getSquareUnit(), false);
 		g.setColor(Color.BLACK);
 		yCoord += 45;
-		yCoord = drawText(g, 23, yCoord, new String[] {"Here's all of the game controls:",
-				"Arrow keys: Move the robot around.",
-				"R: Fill your fuel tank with a reserve, which can be purchased from the shop.",
-				"D: Blast a hole in the ground with dynamite, which you can purchase.",
+		yCoord = drawText(g, 23, yCoord, new String[] {
 				"The goal of the game is to gradually upgrade your robot.  To upgrade,",
 				"you need money, which you get from collecting elements.  Elements are",
 				"those little colored circles on the ground:"});
@@ -233,16 +209,8 @@ public class WelcomeView {
 		yCoord += 75;
 		yCoord = drawText(g, 23, yCoord, new String[] {
 				"When you drive over each element, you will recieve the amount of money",
-				"shown under each element.  Also, the element will disappear.", "",
+				"shown under each element and the element will disappear.", "",
 				"Good Luck!", "", "     - Daniel Glus, the Head Programmer"});
-		
-		// RIGHT COLUMN
-		g.setFont(new Font(Font.SANS_SERIF, Font.BOLD, 18));
-		g.drawString("Recent News", 523, 50);
-		g.setFont(new Font(Font.SANS_SERIF, Font.PLAIN, 14));
-		drawText(g, 523, 75, 30, "6/21/12: v0.9 of YAMG comes out.",
-				"6/18/12: v0.8.5 of YAMG comes out.",
-				"4/17/12: v0.8 of YAMG comes out.", "4/8/12: v0.7 of YAMG comes out.");
 	}
 	
 	/*
@@ -311,18 +279,5 @@ public class WelcomeView {
 				}
 			}
 		}
-	}
-	
-	private class ExitListener implements KeyListener {
-		public void keyPressed(KeyEvent arg0) {
-			if(arg0.getKeyCode() == KeyEvent.VK_ESCAPE) {
-				System.exit(0);
-			} else if(arg0.getKeyCode() == KeyEvent.VK_ENTER) {
-				yamg.runApplication();
-			}
-		}
-
-		public void keyReleased(KeyEvent arg0) { }
-		public void keyTyped(KeyEvent arg0) { }
 	}
 }

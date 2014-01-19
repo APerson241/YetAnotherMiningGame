@@ -48,7 +48,7 @@ public class MyKeyListener implements KeyListener {
 			model.getRobot().move(GameModel.getUnit(), direction);
 			if(view.getAutoscroll() && view.canScroll(scrollDirection))
 				view.getPanel().scroll(scrollDirection, GameModel.getUnit());
-			Element el = model.removeElement(model.getRobot().getRect());
+			Element el = model.removeElement(model.getRobotRect());
 			if(el != null) {
 				view.addFlyUp("+ $" + el.getType().getPrice());
 				model.doRefresh();
@@ -59,12 +59,11 @@ public class MyKeyListener implements KeyListener {
 			model.addHole(model.getRobotLocation());
 			DebugConsole.getInstance().println("Added hole: " + model.getRobot().getLocation());
 		}
-		if(model.getShop().getBounds().contains(model.getRobotLocation())) {
+		if(model.getShop().getBounds().intersects(model.getRobotRect())) {
 			view.getFlyups().setPermanentFlyUp("Press S to open Shop");
-		} else if(model.getPortal().getBounds().contains(model.getRobotLocation())) {
+		} else if(model.getPortal().getBounds().intersects(model.getRobotRect())) {
 			view.getFlyups().setPermanentFlyUp("Press S to open Real Estate");
 		} else view.getFlyups().setPermanentFlyUp("");
-//		System.out.println("Moved robot.");
 		model.doRefresh();
 	}
 

@@ -2,6 +2,7 @@ package info.angrynerds.yamg.ui;
 
 import info.angrynerds.yamg.*;
 import info.angrynerds.yamg.robot.Element;
+import info.angrynerds.yamg.robot.Robot;
 import info.angrynerds.yamg.utils.Configurables;
 import info.angrynerds.yamg.utils.DebugConsole;
 import info.angrynerds.yamg.utils.Direction;
@@ -78,7 +79,8 @@ public class GamePanel extends JPanel {
 		for(Rectangle rect:model.getHoles())
 			if(isYCoordInsideWindow(rect.y))
 				g.fillRect(rect.x, rect.y + yOffset, GameModel.getUnit(), GameModel.getUnit());
-		drawRobot(g);
+		Robot.paint(g, model.getRobotLocation(), GameModel.getSquareUnit(),
+				model.getRobot().isDead());
 		g.setColor(Color.BLACK);
 		for(Rectangle rect:model.getRocks())
 			if(isYCoordInsideWindow(rect.y))
@@ -122,17 +124,6 @@ public class GamePanel extends JPanel {
 			g.drawString("to move the robot!", x - GameModel.getUnit(), y - GameModel.getUnit() + 10);
 		}
 		drawHUD(g);
-	}
-	
-	private void drawRobot(Graphics g) {
-		g.setColor(model.getRobot().isDead()?Color.RED:Color.GREEN);
-		drawRobot(g, model.getRobotLocation());
-	}
-	
-	public void drawRobot(Graphics g, Point position) {
-		g.fillRoundRect(model.getRobotLocation().x, model.getRobotLocation().y + yOffset,
-				GameModel.getUnit(), GameModel.getUnit(),
-				9, 9);
 	}
 
 	public void scroll(Direction up, int i) {

@@ -49,6 +49,31 @@ public class Robot implements Serializable {
 		}
 	}
 	
+	/**
+	 * Paints the thing.
+	 */
+	public static void paint(Graphics g, Point position, Dimension size, boolean dead) {
+		int x0 = position.x, y0 = position.y;
+		g.setColor(dead?Color.RED:Color.GREEN);
+		int arcSize = (int) Math.floor((1/5) * 0.5 * (size.width + size.height));
+		g.fillRoundRect(x0, y0, size.width, size.height, arcSize, arcSize);
+		g.setColor(Color.BLACK);
+		g.fillRect(x0 + size.width/10, y0 + size.height/5, 4 *
+				size.width / 5, size.height / 10); // Black bar
+		g.setColor(Color.BLUE);
+		g.fillOval(x0 + 3 * size.width / 5, y0 + size.height/20,
+				size.width / 10, size.height / 10); // Blue circle
+		g.setColor(Color.BLACK);
+		g.fillOval(x0 + 4 * size.width / 5, y0 + size.height/20,
+				size.width / 10, size.height / 10); // Black circle
+		g.drawRect(x0 + size.width / 5, y0 + 9 * size.height/20, 3 *
+				size.width / 5, 5 * size.height / 12);
+		g.drawRect(x0 + 2 * size.width / 5, y0 + 9 * size.height/20, size.width / 5,
+				5 * size.height / 12);
+		g.drawRect(x0 + size.width / 5, y0 + size.height/2 + 5 * size.height/36,
+				3 * size.width / 5, 5 * size.height / 36);
+	}
+	
 	public void useReserve() {
 		if(reserves >= 1) {
 			if(tank.isEmpty()) {

@@ -176,7 +176,7 @@ public class OptionsManager {
 		mainPanel.add(cheatPanel, BorderLayout.SOUTH);
 		mainPanel.add(center, BorderLayout.CENTER);
 		frame.getContentPane().add(mainPanel, BorderLayout.CENTER);
-		frame.setBounds(Helper.getCenteredBounds(500, 350));
+		frame.setBounds(Helper.getCenteredBounds(550, 350));
 	}
 	
 	public void setVisible(boolean visible) {
@@ -245,6 +245,7 @@ public class OptionsManager {
 				daniel.setVisible(true);
 				lulz.setVisible(true);
 				kaboom.setVisible(true);
+				frame.setBounds(Helper.getCenteredBounds(550, 400));
 			}
 			cheats.add(cheat);
 			String result = "";

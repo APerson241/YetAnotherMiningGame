@@ -3,7 +3,7 @@ package info.angrynerds.yamg.utils;
 import java.awt.*;
 
 /**
- * Where we put all the "magic numbers".
+ * Where we put all the "magic numbers" (and strings, and whatever).
  * @author Daniel Glus
  * @version 0.5
  */

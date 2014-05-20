@@ -8,7 +8,7 @@ import info.angrynerds.yamg.ui.*;
 import info.angrynerds.yamg.utils.*;
 
 public class Yamg {
-	public static final String VERSION = "Alpha Version 1.2.5";
+	public static final String VERSION = "Alpha Version 1.2.6";
 	
 	private LoadManager load;
 	private GameModel model;
@@ -17,7 +17,7 @@ public class Yamg {
 	
 	public static void main(String[] args) {
 		try {
-		new Yamg().go();
+			new Yamg().go();
 		} catch(Exception ex) {
 			JOptionPane.showConfirmDialog(null,
 					"There was an error!\n" + ex.getMessage(), "Error!", JOptionPane.ERROR_MESSAGE);

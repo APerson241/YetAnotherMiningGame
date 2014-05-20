@@ -5,11 +5,8 @@ import info.angrynerds.yamg.ui.GamePanel;
 import info.angrynerds.yamg.utils.*;
 
 import java.awt.*;
-import java.awt.event.*;
 import java.util.*;
 import java.util.List;
-
-import javax.swing.*;
 
 /**
  * This class should handle all aspects of switching between planets, holding planets, and other
@@ -217,23 +214,5 @@ public class Portal {
 	
 	public List<Planet> getPlanets() {
 		return planets;
-	}
-	
-	public class UserListener implements ActionListener {
-		public void actionPerformed(ActionEvent arg0) {
-			if(arg0.getSource() instanceof JButton) {
-				JButton button = (JButton)arg0.getSource();
-				if(button.getName().equals("colonizeButton")) {
-					selectedPlanet.setColonized(true);
-					model.getBankAccount().withdraw(500);
-				} else if(button.getName().equals("scanButton")) {
-					Planet newPlanet = generateNewPlanet();
-					newPlanet.setScanned(true);
-					planets.add(newPlanet);
-					model.getBankAccount().withdraw(50);
-				}
-			}
-			model.doRefresh();
-		}
 	}
 }

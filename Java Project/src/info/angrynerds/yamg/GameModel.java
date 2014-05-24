@@ -56,6 +56,7 @@ public class GameModel implements PropertyChangeListener, Serializable {
 		shop = new Shop(this);
 		yamg = y;
 		robot.addPropertyChangeListener(this);
+		CheatManager.getInstance().addPropertyChangeListener(this);
 	}
 	
 	public void addHole(Point point) {
@@ -198,7 +199,13 @@ public class GameModel implements PropertyChangeListener, Serializable {
 	}
 
 	public void propertyChange(PropertyChangeEvent evt) {
-		
+		DebugConsole.getInstance().println("[GameModel/propertyChange()] Notified of PropertyChangeEvent");
+		if(CheatManager.getInstance().getMoneyToAdd() > 0) {
+			// If the CheatManager indicates that it wants us to deposit money, then do so...
+			bank.deposit(CheatManager.getInstance().getMoneyToAdd());
+			// ... then set the amount of money it wants us to deposit to 0
+			CheatManager.getInstance().clearMoneyToAdd();
+		}
 	}
 
 	public Yamg getController() {
@@ -230,7 +237,7 @@ public class GameModel implements PropertyChangeListener, Serializable {
 	 * @return Whether or not the model is locked.
 	 */
 	public boolean isLocked() {
-		return shop.isVisible() || portal.isVisible();
+		return shop.isVisible() || portal.isVisible() || CheatManager.getInstance().isVisible();
 	}
 
 	/* (non-Javadoc)

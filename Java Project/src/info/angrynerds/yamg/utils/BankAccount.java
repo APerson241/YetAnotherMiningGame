@@ -2,13 +2,13 @@ package info.angrynerds.yamg.utils;
 
 import java.beans.*;
 import java.io.Serializable;
-import java.util.ArrayList;
+import java.util.*;
 
 @SuppressWarnings("serial")
 public class BankAccount implements Serializable {
 	private int money;
 	
-	private ArrayList<PropertyChangeListener> listeners;
+	private List<PropertyChangeListener> listeners;
 	
 	public BankAccount(int amount) {
 		money = amount;
@@ -38,6 +38,7 @@ public class BankAccount implements Serializable {
 		if(value >= 0) {
 			notifyPropertyChangeListeners(money, money + value);
 			money += value;
+			DebugConsole.getInstance().println("[BankAccount/deposit()] Deposited " + value);
 		} else {
 			throw new IllegalArgumentException("You can't deposit a negative number of dollars!");
 		}

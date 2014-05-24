@@ -2,8 +2,9 @@ package info.angrynerds.yamg.ui;
 
 import java.awt.*;
 import java.awt.event.*;
+import java.beans.PropertyChangeEvent;
+import java.beans.PropertyChangeListener;
 import java.util.List;
-import java.util.*;
 
 import info.angrynerds.yamg.GameModel;
 import info.angrynerds.yamg.utils.*;
@@ -34,26 +35,28 @@ public class OptionsManager {
 	private JCheckBox gravityOnStatus;
 	private JCheckBox bossStatus;
 	private JCheckBox scrollStatus;
-	private JCheckBox printMouseCoords;
-	// CHEATS
-	private JPanel cheatPanel;
-	private JCheckBox daniel;
-	private JCheckBox lulz;
-	private JCheckBox kaboom;
-	
-	private List<String> cheats;
+	private JCheckBox notifyViewRefresh;
 	
 	private GameModel model;
 	
-	private static OptionsManager instance;
+	private static OptionsManager instance = new OptionsManager();
+	private List<PropertyChangeListener> listeners;
 	
-	public OptionsManager(GameModel model) {
-		this.model = model;
-		cheats = new ArrayList<String>();
-	}
+	private OptionsManager() {}
 	
 	public static OptionsManager getInstance() {
 		return instance;
+	}
+	
+	public void addPropertyChangeListener(PropertyChangeListener listener) {
+		listeners.add(listener);
+	}
+	
+	public void notifyPropertyChangeListeners() {
+		PropertyChangeEvent event = new PropertyChangeEvent(this, null, false, false);
+		for(PropertyChangeListener listener:listeners) {
+			listener.propertyChange(event);
+		}
 	}
 	
 	// A helper method.
@@ -152,28 +155,11 @@ public class OptionsManager {
 			scrollStatus = new JCheckBox("Scroll position on/off on status bar");
 			scrollStatus.addActionListener(new ButtonListener());
 			debugOptions.add(scrollStatus);
-			printMouseCoords = new JCheckBox("Print mouse coordinates to System.out");
-			printMouseCoords.addActionListener(new ButtonListener());
-			debugOptions.add(printMouseCoords);
+			notifyViewRefresh = new JCheckBox("View refresh notifications on/off");
+			notifyViewRefresh.addActionListener(new ButtonListener());
+			debugOptions.add(notifyViewRefresh);
 		center.add(debugOptions);
-		cheatPanel = new JPanel();
-			daniel = new JCheckBox("???");
-			daniel.addActionListener(new ButtonListener());
-			daniel.setEnabled(false);
-			daniel.setVisible(false);
-			lulz = new JCheckBox("???");
-			lulz.addActionListener(new ButtonListener());
-			lulz.setEnabled(false);
-			lulz.setVisible(false);
-			kaboom = new JCheckBox("???");
-			kaboom.addActionListener(new ButtonListener());
-			kaboom.setEnabled(false);
-			kaboom.setVisible(false);
-			cheatPanel.add(daniel);
-			cheatPanel.add(kaboom);
-			cheatPanel.add(lulz);
 		mainPanel.add(buildTopPanel(), BorderLayout.NORTH);
-		mainPanel.add(cheatPanel, BorderLayout.SOUTH);
 		mainPanel.add(center, BorderLayout.CENTER);
 		frame.getContentPane().add(mainPanel, BorderLayout.CENTER);
 		frame.setBounds(Helper.getCenteredBounds(550, 350));
@@ -198,85 +184,9 @@ public class OptionsManager {
 				} else if(source.getText().equals(refresh.getText())) {
 					fpsStatus.setEnabled(refresh.isSelected());
 					model.getView().setRefreshing(refresh.isSelected());
-				} else if(source.getText().equals("daniel: Infinite fuel")) {
-					model.getRobot().getFuelTank().infiniteFuel(source.isSelected());
-					if(!source.isSelected()) {
-						lulz.setSelected(false);
-					} else {
-						if(kaboom.isSelected()) {
-							lulz.setSelected(true);
-						}
-					}
-				} else if(source.getText().equals("kaboom: Infinite dynamite")) {
-					model.infiniteDynamite(source.isSelected());
-					if(!source.isSelected()) {
-						lulz.setSelected(false);
-					} else {
-						if(daniel.isSelected()) {
-							lulz.setSelected(true);
-						}
-					}
-				} else if(source.getText().equals("lulz: Infinite fuel and dynamite")) {
-					if(source.isSelected()) {
-						daniel.setSelected(true);
-						kaboom.setSelected(true);
-					}
-					model.getRobot().getFuelTank().infiniteFuel(source.isSelected());
-					model.infiniteDynamite(source.isSelected());
 				}
 			}
 			model.getView().refreshView();
-		}
-	}
-	
-	public void addCheat(String cheat) {
-		String[] validCheats = {"daniel", "kaboom", "lulz", "profit!"};
-		boolean valid = false;
-		for(String validCheat:validCheats) {
-			if(cheat.equals(validCheat)) {
-				valid = true;
-				break;
-			}
-		}
-		if(valid) {
-			boolean firstTime = cheats.isEmpty();
-			if(firstTime) {
-				cheatPanel.setBorder(BorderFactory.createTitledBorder("Cheat Codes"));
-				daniel.setVisible(true);
-				lulz.setVisible(true);
-				kaboom.setVisible(true);
-				frame.setBounds(Helper.getCenteredBounds(550, 400));
-			}
-			cheats.add(cheat);
-			String result = "";
-			if(cheat.equals("daniel")) {
-				model.getRobot().getFuelTank().infiniteFuel(true);
-				daniel.setText("daniel: Infinite fuel");
-				daniel.setEnabled(true);
-				daniel.setSelected(true);
-				result = "infinite fuel";
-			} else if(cheat.equals("kaboom")) {
-				model.infiniteDynamite(true);
-				kaboom.setText("kaboom: Infinite dynamite");
-				kaboom.setEnabled(true);
-				kaboom.setSelected(true);
-				result = "infinite dynamite";
-			} else if(cheat.equals("lulz")) {
-				model.getRobot().getFuelTank().infiniteFuel(true);
-				model.infiniteDynamite(true);
-				lulz.setText("lulz: Infinite fuel and dynamite");
-				lulz.setEnabled(true);
-				lulz.setSelected(true);
-				result = "infinite fuel and infinite dynamite";
-			} else if(cheat.equals("profit!")) {
-				model.getBankAccount().deposit(100000);
-				result = "$100,000";
-			}
-			JOptionPane.showConfirmDialog(null,
-					String.format("Cheat %s successfully added.  You get %s.%s",
-					cheat, result, (firstTime?"\nNote: You can turn cheats off in Preferences."
-					:"")), "You Cheat!", JOptionPane.DEFAULT_OPTION, 1);
-			DebugConsole.getInstance().println("[OptionsManager/addCheat] Cheat " + cheat + " added.");
 		}
 	}
 
@@ -357,9 +267,9 @@ public class OptionsManager {
 		}
 	}
 
-	public boolean isPrintMouseCoords() {
+	public boolean isNotifyViewRefresh() {
 		if(frame == null) buildGUI();
-		return printMouseCoords.isSelected();
+		return notifyViewRefresh.isSelected();
 	}
 	
 	public boolean isRefresh() {

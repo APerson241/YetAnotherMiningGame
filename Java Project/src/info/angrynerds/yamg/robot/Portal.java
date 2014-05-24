@@ -14,14 +14,15 @@ import java.util.List;
  * @author Daniel Glus (APerson241)
  */
 public class Portal {
-	private Rectangle bounds, exitButton, scanButton, colonizeButton, travelButton, galaxyPane;
+	private Rectangle bounds; // In the game world, the bounds of the box that says "Real Estate"
+	private Rectangle exitButton, scanButton, colonizeButton, travelButton, galaxyPane;
 	private GameModel model;
 	private List<Planet> planets;
 	private Map<Planet, Rectangle> hitboxes;
 	private Planet selectedPlanet;
 	private boolean visible;
-	private Rectangle window;
-	private int xOff, yOff;
+	private Rectangle window; // The bounds of the window that appears on the screen
+	private int xOff, yOff; // Offsets for painting the PLANETS, not anything else
 	private int planetNameIndex = 0; // How far we are through the list of planets
 	private int scanPrice = Configurables.BASE_SCAN_PRICE;
 
@@ -51,8 +52,8 @@ public class Portal {
 				Configurables.GALAXY_MARGIN, window.width -
 				Configurables.GALAXY_MARGIN * 2, window.height - Configurables.GALAXY_MARGIN * 2);
 		exitButton = new Rectangle(window.x + window.width - 55, window.y + 5, 50, 20);
-		scanButton = new Rectangle(window.x + (window.width - 80) / 2, window.y + window.height - 35, 80, 20);
-		colonizeButton = new Rectangle(window.x + (window.width - 80) / 2 + 150, window.y + window.height - 35, 120, 20);
+		scanButton = new Rectangle(window.x + (window.width - 80) / 2, window.y + window.height - 35, 90, 20);
+		colonizeButton = new Rectangle(window.x + (window.width - 80) / 2 + 150, window.y + window.height - 35, 130, 20);
 		travelButton = new Rectangle(window.x + (window.width - 80) / 2 - 150, window.y + window.height - 35, 120, 20);
 	}
 
@@ -82,6 +83,10 @@ public class Portal {
 		g.setFont(original);
 	}
 	
+	/**
+	 * @param x_o The x-coord of the planet with respect to the "galaxy".
+	 * @param y_o The y-coord of the planet with respect to the "galaxy".
+	 */
 	private void paintPlanet(Graphics g, Planet planet, int x_o, int y_o) {
 		int x = x_o + xOff - PLANET_SIZE / 2, y = y_o + yOff - PLANET_SIZE / 2;
 		if(planet.equals(selectedPlanet)) {
@@ -94,7 +99,7 @@ public class Portal {
 		if(planet.containsRobot() || planet.equals(selectedPlanet)) {
 			int textWidth = g.getFontMetrics().stringWidth(planet.getName());
 			g.setColor(Color.WHITE);
-			g.drawString(planet.getName(), x_o + xOff + (PLANET_SIZE - textWidth) / 2,
+			g.drawString(planet.getName(), x + PLANET_SIZE / 2 - textWidth / 2,
 					y_o + PLANET_SIZE + yOff + 5);
 		}
 		if(!hitboxes.containsKey(planet))
@@ -168,30 +173,27 @@ public class Portal {
 	}
 	
 	public void mouseClick(Point point) {
-		if(exitButton.contains(point)) {
+		if(exitButton.contains(point) || !getWindowBounds().contains(point)) {
 			setVisible(false); return;
-		}
-		if(scanButton.contains(point) && model.getBankAccount().getMoney() >= scanPrice) {
+		} else if(scanButton.contains(point) && model.getBankAccount().getMoney() >= scanPrice) {
 			Planet newPlanet = generateNewPlanet();
 			newPlanet.setScanned(true);
 			planets.add(newPlanet);
 			model.getBankAccount().withdraw(scanPrice);
 			scanPrice += Configurables.BASE_SCAN_PRICE;
-		}
-		if(colonizeButton.contains(point) && model.getBankAccount().getMoney() >=
+		} else if(colonizeButton.contains(point) && model.getBankAccount().getMoney() >=
 				Configurables.COLONIZE_PRICE && selectedPlanet != null &&
 				!selectedPlanet.isColonized()) {
 			selectedPlanet.setColonized(true);
 			model.getBankAccount().withdraw(Configurables.COLONIZE_PRICE);
+		} else if(selectedPlanet != null && galaxyPane.contains(point)) {
+			selectedPlanet = null;
 		}
 		for(Planet planet:planets) {
 			if(hitboxes.containsKey(planet) && hitboxes.get(planet).contains(point)) {
 				selectedPlanet = planet;
 				return;
 			}
-		}
-		if(selectedPlanet != null && galaxyPane.contains(point)) {
-			selectedPlanet = null;
 		}
 	}
 	

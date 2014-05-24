@@ -21,7 +21,6 @@ public class GameView {
 	private GamePanel panel;
 	private GameModel model;
 	private FlyUpsManager flyups;
-	private OptionsManager options;
 	
 	private Runnable refreshJob;
 	private boolean isRefreshing = false;
@@ -67,7 +66,7 @@ public class GameView {
 			fileMenu.add(exitMenuItem);
 		menuBar.add(fileMenu);
 		JMenu advancedMenu = new JMenu("Advanced");
-			JMenuItem cheatMenuItem = new JMenuItem("Enter a cheat code...");
+			JMenuItem cheatMenuItem = new JMenuItem("Cheat Code Manager...");
 				cheatMenuItem.addActionListener(new MenuBarListener());
 			advancedMenu.add(cheatMenuItem);
 			JMenuItem debugMenuItem = new JMenuItem("Toggle debug window");
@@ -99,7 +98,6 @@ public class GameView {
 	public void setVisible(boolean visible) {
 		if(frame == null) {
 			flyups = new FlyUpsManager();
-			options = new OptionsManager(model);
 			buildGUI();
 		}
 		frame.setVisible(visible);
@@ -118,29 +116,31 @@ public class GameView {
 	}
 	
 	public void refreshView() {
-		DebugConsole.getInstance().println("[GameView/refreshView()] Refreshing view...");
+		if(OptionsManager.getInstance().isNotifyViewRefresh()) {
+			DebugConsole.getInstance().println("[GameView/refreshView()] Refreshing view...");
+		}
 		panel.repaint();
 		statusBar.setText(getStatusBarText());
 		model.getShop().update();
 	}
 	
 	public String getStatusBarText() {
-		String gravityInfo = (options.isGravityDebugStatus())
+		String gravityInfo = (OptionsManager.getInstance().isGravityDebugStatus())
 				?" | Gravity Info: abvG " + (model.getRobotLocation().y < 200) +
 				", abvH " + (model.getHoles().contains(new Rectangle(model.getRobotLocation().x,
 						model.getRobotLocation().y + 25, 25, 25))):"";
 		
 		return "Status: " + (model.isLocked()?"Locked":"Ready") + " | Robot position = (" +
 			model.getRobotLocation().x + ", " + model.getRobotLocation().y +
-			")" + (options.isScrollPositionOnStatus()?(" | Scroll position = " + panel.getScroll()):"") +
-			(options.isAutoscrollOnStatus()?(" | Autoscroll " + (autoscroll ? "ON"
-			: "OFF")):"") + (options.isGravityOnStatus()?(" | Gravity " +
+			")" + (OptionsManager.getInstance().isScrollPositionOnStatus()?(" | Scroll position = " + panel.getScroll()):"") +
+			(OptionsManager.getInstance().isAutoscrollOnStatus()?(" | Autoscroll " + (autoscroll ? "ON"
+			: "OFF")):"") + (OptionsManager.getInstance().isGravityOnStatus()?(" | Gravity " +
 			(model.isGravity() ? "ON" : "OFF")):"") + gravityInfo +
-			(options.isFPSStatus()?(isRefreshing?(" | " + fps + " FPS"):" | -- FPS"):"");
+			(OptionsManager.getInstance().isFPSStatus()?(isRefreshing?(" | " + fps + " FPS"):" | -- FPS"):"");
 	}
 	
 	public int getGravityDelay() {
-		return options.getGravityDelay();
+		return OptionsManager.getInstance().getGravityDelay();
 	}
 	
 	public void addFlyUp(String message) {
@@ -175,31 +175,19 @@ public class GameView {
 		}
 		return false;
 	}
-
-	public OptionsManager getOptions() {
-		return options;
-	}
 	
 	private class MenuBarListener implements ActionListener {
 		public void actionPerformed(ActionEvent arg0) {
 			if(arg0.getSource() instanceof JMenuItem) {
 				JMenuItem item = (JMenuItem) arg0.getSource();
 				if(item.getText().equals("Preferences...")) {
-					if(options == null) {
-						options = new OptionsManager(model);
-					}
-					options.setVisible(true);
+					OptionsManager.getInstance().setVisible(true);
 				} else if(item.getText().equals("Quit")) {
 					System.exit(0);
 				} else if(item.getText().equals("About YAMG...")) {
 					aboutView.setVisible(true);
-				} else if(item.getText().equals("Enter a cheat code...")) {
-					String result = JOptionPane.showInputDialog(frame,
-							"Enter a cheat code!", "Oh boy...", 1);
-					if(result != null) {
-						result = result.trim().toLowerCase();
-						options.addCheat(result);
-					}
+				} else if(item.getText().equals("Cheat Code Manager...")) {
+					CheatManager.getInstance().setVisible(true);
 				} else if(item.getText().equals("Save Game As...")) {
 					JFileChooser fileChooser = new JFileChooser();
 					fileChooser.addChoosableFileFilter(new FileNameExtensionFilter(
@@ -254,21 +242,16 @@ public class GameView {
 		public void mouseEntered(MouseEvent arg0) {}
 		public void mouseExited(MouseEvent arg0) {}
 		public void mousePressed(MouseEvent arg0) {
-			if(options.isPrintMouseCoords()) {
-				System.out.println("Mouse was clicked: " + arg0.getPoint());
+			DebugConsole.getInstance().println(
+					"[GameView/PanelClickListener/mousePressed()] " + arg0.getPoint());
+			if(model.getPortal().isVisible()) {
+				model.getPortal().mouseClick(arg0.getPoint());
+			} else if(CheatManager.getInstance().isVisible()) {
+				CheatManager.getInstance().mouseClick(arg0.getPoint());
+			} else if(model.getShop().isVisible()) {
+				model.getShop().setVisible(false);
 			}
-			if(model.isLocked()) {
-				if(model.getPortal().isVisible()) {
-					if(model.getPortal().getWindowBounds().contains(arg0.getPoint())) {
-						model.getPortal().mouseClick(arg0.getPoint());
-					} else {
-						model.getPortal().setVisible(false);
-					}
-				} else {
-					model.getShop().setVisible(false);
-				}
-				refreshView();
-			}
+			refreshView();
 		}
 		public void mouseReleased(MouseEvent arg0) {}
 	}
@@ -277,7 +260,7 @@ public class GameView {
 		private Date lastRefresh = new Date();
 		public void run() {
 			while(isRefreshing) {
-				if(!options.isRefresh()) {
+				if(!OptionsManager.getInstance().isRefresh()) {
 					DebugConsole.getInstance().println("[GameView/RefreshJob/run()] BREAK!");
 					isRefreshing = false;
 					refreshView();
@@ -287,7 +270,7 @@ public class GameView {
 				refreshView();
 				lastRefresh = new Date();
 				try {
-					Thread.sleep(options.getRefreshDelay());
+					Thread.sleep(OptionsManager.getInstance().getRefreshDelay());
 				} catch(InterruptedException ex) {
 					ex.printStackTrace();
 				}

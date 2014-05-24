@@ -101,10 +101,12 @@ public class GamePanel extends JPanel {
 		if(model.getRobot().isDead() && model.getRobot().getReserves() <= 0) {
 			drawGameOverMessage(g);
 		} else if(model.isLocked()) {
+			// Black overlay
 			g.setColor(new Color(0, 0, 0, 128));
 			g.fillRect(0, 0, this.getWidth(), this.getHeight());
 			if(model.getPortal().isVisible())
 				model.getPortal().paintWindow(g);
+			CheatManager.getInstance().paint(g);
 		}
 		if(!model.FIRST_STEP) {
 			drawPreFirstStepMessage(g);

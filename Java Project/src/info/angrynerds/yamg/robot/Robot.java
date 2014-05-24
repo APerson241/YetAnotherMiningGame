@@ -12,7 +12,6 @@ import java.util.List;
 @SuppressWarnings("serial")
 public class Robot implements Serializable {
 	private Rectangle location;
-	private Point storedLocation;
 	
 	private FuelTank tank;
 	private int reserves = 0;
@@ -50,7 +49,18 @@ public class Robot implements Serializable {
 	}
 	
 	/**
-	 * Paints the thing.
+	 * For use during the game.
+	 * @param g The Graphics object.
+	 */
+	public void paint(Graphics g) {
+		paint(g, location.getLocation(), location.getSize(), dead);
+	}
+	
+	/**
+	 * Paints the thing. The <code>dead</code>, <code>position</code>, and
+	 * <code>size</code> parameters are needed since there are moments
+	 * when we need to paint the robot in a particular state; for instance, in
+	 * the introduction.
 	 */
 	public static void paint(Graphics g, Point position, Dimension size, boolean dead) {
 		int x0 = position.x, y0 = position.y;
@@ -105,20 +115,6 @@ public class Robot implements Serializable {
 	
 	public void upgradeDynamite() {
 		dynamiteTier++;
-	}
-	
-	public void storeLocation() {
-		storedLocation.x = location.x;
-		storedLocation.y = location.y;
-	}
-	
-	public void goToLocation() {
-		location.x = storedLocation.x;
-		location.y = storedLocation.y;
-	}
-	
-	public Point getStoredLocation() {
-		return storedLocation;
 	}
 	
 	public void move(int distance, Direction direction, boolean useFuel) {
@@ -199,8 +195,6 @@ public class Robot implements Serializable {
 		result = prime * result
 				+ ((location == null) ? 0 : location.hashCode());
 		result = prime * result + reserves;
-		result = prime * result
-				+ ((storedLocation == null) ? 0 : storedLocation.hashCode());
 		result = prime * result + ((tank == null) ? 0 : tank.hashCode());
 		return result;
 	}
@@ -234,11 +228,6 @@ public class Robot implements Serializable {
 		} else if (!location.equals(other.location))
 			return false;
 		if (reserves != other.reserves)
-			return false;
-		if (storedLocation == null) {
-			if (other.storedLocation != null)
-				return false;
-		} else if (!storedLocation.equals(other.storedLocation))
 			return false;
 		if (tank == null) {
 			if (other.tank != null)

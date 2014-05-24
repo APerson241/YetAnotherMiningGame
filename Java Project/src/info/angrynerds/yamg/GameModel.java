@@ -159,7 +159,7 @@ public class GameModel implements PropertyChangeListener, Serializable {
 
 	/**
 	 * Determines if the robot can move in the given direction based on the robot position and
-	 * the fuel level of the robot.  Consulted by the {@link info.angrynerds.yamg.ui.MyKeyListener
+	 * the fuel level of the robot.  Consulted by the {@link info.angrynerds.yamg.ui.GamePanelKeyListener
 	 * MyKeyListener} before the MyKeyListener moves the robot after the user presses an arrow
 	 * key.
 	 * @param direction The direction the robot wants to move

@@ -17,9 +17,6 @@ public class WelcomeView {
 	private JPanel centerPanel;
 	private ImagePanel image;
 	
-	private JButton startButton;
-	private JButton exitButton;
-	
 	private int status = 1; // 1 = animation, 2 = "click to continue", 3 = tutorial
 	private StringBuilder stringShownYAMG = new StringBuilder();
 	private StringBuilder stringShownYAMG2 = new StringBuilder();
@@ -34,17 +31,7 @@ public class WelcomeView {
 		centerPanel = new JPanel();
 			centerPanel.setLayout(new BorderLayout());
 			image = new ImagePanel();
-			JPanel bottom = new JPanel();
-				startButton = new JButton("Start Game");
-					startButton.addActionListener(new ButtonListener());
-					startButton.setEnabled(false);
-				bottom.add(startButton);
-				exitButton = new JButton("Exit");
-					exitButton.addActionListener(new ButtonListener());
-					exitButton.setEnabled(false);
-				bottom.add(exitButton);
 			centerPanel.add(BorderLayout.CENTER, image);
-			centerPanel.add(BorderLayout.SOUTH, bottom);
 		frame.getContentPane().add(centerPanel);
 		frame.setResizable(false);
 		frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
@@ -62,14 +49,14 @@ public class WelcomeView {
 		for(char c:"YAMG".toCharArray()) {
 			stringShownYAMG.append(c);
 			image.repaint();
-			Thread.sleep(500);
+			Thread.sleep(300);
 		}
 		for(String str:new String[] {"Yet ", "Another ", "Mining ", "Game"}) {
 			stringShownYAMG2.append(str);
 			image.repaint();
-			Thread.sleep(500);
+			Thread.sleep(300);
 		}
-		Thread.sleep(500);
+		Thread.sleep(300);
 		if(status != 3) status = 2; // If the user clicked to skip it, don't go back to status 2.
 		image.repaint();
 	}
@@ -130,13 +117,12 @@ public class WelcomeView {
 				break;
 			case 2:
 				paintBackgroundAndStuff(g);
-				g.setColor(Color.WHITE);
-				g.setFont(new Font(Font.MONOSPACED, Font.BOLD, 24));
-				g.drawString("(click to continue)", 300, 400);
+				drawContinueArrow(g, image.getWidth() - 200, image.getHeight() - 110);
 				break;
 			case 3:
 				paintBackgroundAndStuff(g);
 				drawOldTutorial(g, this.getSize());
+				drawContinueArrow(g, image.getWidth() - 200, image.getHeight() - 200);
 				break;
 			}
 			g.setFont(new Font(Font.SANS_SERIF, Font.PLAIN, 12));
@@ -144,41 +130,91 @@ public class WelcomeView {
 			g.drawString(Yamg.VERSION, 5, image.getHeight() - 10);
 		}
 
+		private final Dimension CONTINUE_ARROW_SIZE = new Dimension(150, 50);
+		private final int ARROW_BODY_MARGIN = 10;
+		private final int ARROW_HEAD_WIDTH = 30;
+		/**
+		 * Draws an arrow that says "Continue".
+		 * Order of drawing:
+		 * <pre>
+		 *       6
+		 *       |\
+		 *       | \
+		 * 1-----7  \
+		 * |         \
+		 * |          5
+		 * |         /
+		 * 2-----3  /
+		 *       | /
+		 *       |/
+		 *       4
+		 * </pre>
+		 * @param g The Graphics object
+		 * @param x The x-coordinate of the bounding box of the arrow
+		 * @param y The y-coordinate of the bounding box of the arrow
+		 * @param darkBackground Whether the arrow is to be drawn against a dark background
+		 */
+		private void drawContinueArrow(Graphics g, int x, int y) {
+			boolean cont = status == 2; // true if we're drawing the "Continue" button and
+			                            // false if we're drawing the "Start Game" button
+			Polygon arrow = new Polygon(
+					new int[] {x, x, x + CONTINUE_ARROW_SIZE.width - ARROW_HEAD_WIDTH,
+							x + CONTINUE_ARROW_SIZE.width - ARROW_HEAD_WIDTH, x +
+							CONTINUE_ARROW_SIZE.width,x + CONTINUE_ARROW_SIZE.width -
+							ARROW_HEAD_WIDTH, x + CONTINUE_ARROW_SIZE.width - ARROW_HEAD_WIDTH},
+					new int[] {y + ARROW_BODY_MARGIN, y + CONTINUE_ARROW_SIZE.height -
+							ARROW_BODY_MARGIN, y + CONTINUE_ARROW_SIZE.height -
+							ARROW_BODY_MARGIN, y + CONTINUE_ARROW_SIZE.height, y +
+							CONTINUE_ARROW_SIZE.height / 2, y, y + ARROW_BODY_MARGIN},
+					7);
+			g.setColor(Color.GREEN);
+			g.fillPolygon(arrow);
+			g.setColor(cont?Color.WHITE:Color.BLACK);
+			g.drawPolygon(arrow);
+			g.setFont(new Font(Font.MONOSPACED, Font.BOLD, cont?24:20));
+			g.drawString(cont?"Continue":"Start Game", x + (cont?10:5), y + 30);
+		}
+
 		public void mouseClicked(MouseEvent arg0) {}
 		public void mouseEntered(MouseEvent arg0) {}
 		public void mouseExited(MouseEvent arg0) {}
 		public void mousePressed(MouseEvent arg0) {
-			status = 3;
-			image.repaint();
-			/*(new Thread(new Runnable() {
-				public void run() {
-					try {
-						animateTutorial();
-					} catch (InterruptedException e) {
-						e.printStackTrace();
+			if(status == 2) {
+				status = 3;
+				image.repaint();
+				/*(new Thread(new Runnable() {
+					public void run() {
+						try {
+							animateTutorial();
+						} catch (InterruptedException e) {
+							e.printStackTrace();
+						}
+						startButton.setEnabled(true);
+						exitButton.setEnabled(true);
 					}
-					startButton.setEnabled(true);
-					exitButton.setEnabled(true);
-				}
-			})).start();*/
-			startButton.setEnabled(true);
-			exitButton.setEnabled(true);
+				})).start();*/
+			} else if(status == 3) {
+				yamg.runApplication(); // yep, that's it
+			}
 		}
 		public void mouseReleased(MouseEvent arg0) { }
 	}
 	
 	/**
 	 * The old, static version of the tutorial.
+	 * 99% certain this will end up being hosted at
+	 * <a href="thedailywtf.com">thedailywtf.com</a> someday.
 	 */
 	private void drawOldTutorial(Graphics g, Dimension size) {
-		// LEFT COLUMN
 		int yCoord = 50;
 		g.setColor(Color.getHSBColor(172, 0, 75));
 		g.fillRect(0, 0, size.width, size.height);
 		g.setColor(Color.BLACK);
 		Font original = g.getFont();
 		g.setFont(new Font(Font.SANS_SERIF, Font.BOLD, 24));
-		g.drawString("Welcome to Yet Another Mining Game!", 23, 25);
+		String welcomeMessage = "Welcome to Yet Another Mining Game!";
+		g.drawString(welcomeMessage, (image.getWidth() - g.getFontMetrics().stringWidth(
+				welcomeMessage)) / 2, 25);
 		g.setFont(new Font(Font.SANS_SERIF, Font.BOLD, 18));
 		g.drawString("Instructions", 23, yCoord);
 		g.setFont(original);
@@ -189,9 +225,9 @@ public class WelcomeView {
 		Robot.paint(g, new Point(23, yCoord), GameModel.getSquareUnit(), false);
 		g.setColor(Color.BLACK);
 		yCoord += 45;
-		yCoord = drawText(g, 23, yCoord, new String[] {
-				"The goal of the game is to gradually upgrade your robot.  To upgrade,",
-				"you need money, which you get from collecting elements.  Elements are",
+		yCoord = drawLinesOfText(g, 23, yCoord, new String[] {
+				"The goal of the game is to gradually upgrade your robot. To upgrade,",
+				"you need money, which you get from collecting elements. Elements are",
 				"those little colored circles on the ground:"});
 		ArrayList<Element> toDraw = new ArrayList<Element>();
 		int xCoord = 23;
@@ -207,10 +243,10 @@ public class WelcomeView {
 					elem.getLocation().y + 45);
 		}
 		yCoord += 75;
-		yCoord = drawText(g, 23, yCoord, new String[] {
+		yCoord = drawLinesOfText(g, 23, yCoord, new String[] {
 				"When you drive over each element, you will recieve the amount of money",
 				"shown under each element and the element will disappear.", "",
-				"Good Luck!", "", "     - Daniel Glus, the Head Programmer"});
+				"Good luck!"});
 	}
 	
 	/*
@@ -243,7 +279,7 @@ public class WelcomeView {
 	 * @param strings The strings to draw.
 	 * @return The y coordinate after all of the strings have been drawn.
 	 */
-	public int drawText(Graphics g, int xCoord, int yCoord, String...strings) {
+	public int drawLinesOfText(Graphics g, int xCoord, int yCoord, String...strings) {
 		for(String str:strings) {
 			g.drawString(str, xCoord, yCoord);
 			yCoord += 15;
@@ -260,24 +296,11 @@ public class WelcomeView {
 	 * @param strings The strings to draw.
 	 * @return The y coordinate after all of the strings have been drawn.
 	 */
-	public int drawText(Graphics g, int xCoord, int yCoord, int increment, String...strings) {
+	public int drawLinesOfText(Graphics g, int xCoord, int yCoord, int increment, String...strings) {
 		for(String str:strings) {
 			g.drawString(str, xCoord, yCoord);
 			yCoord += increment;
 		}
 		return yCoord + increment;
-	}
-	
-	private class ButtonListener implements ActionListener {
-		public void actionPerformed(ActionEvent arg0) {
-			if(arg0.getSource() instanceof JButton) {
-				JButton source = (JButton) arg0.getSource();
-				if(source.getText().equals("Start Game")) {
-					yamg.runApplication();
-				} else if(source.getText().equals("Exit")) {
-					System.exit(0);
-				}
-			}
-		}
 	}
 }

@@ -7,11 +7,11 @@ import info.angrynerds.yamg.utils.*;
 import java.awt.*;
 import java.awt.event.*;
 
-public class MyKeyListener implements KeyListener {
+public class GamePanelKeyListener implements KeyListener {
 	private GameModel model;
 	private GameView view;
 	
-	public MyKeyListener(Yamg y, GameModel gm, GameView gv) {
+	public GamePanelKeyListener(Yamg y, GameModel gm, GameView gv) {
 		model = gm;
 		view = gv;
 	}
@@ -80,18 +80,22 @@ public class MyKeyListener implements KeyListener {
 				model.getPortal().setVisible(true);
 				view.refreshView();
 			}
-		} else if(keyCode == KeyEvent.VK_J) {
+		} else if(keyCode == KeyEvent.VK_J) { // Scroll down (debugging purposes)
 			view.getPanel().scroll(Direction.DOWN, GameModel.getUnit());
-		} else if(keyCode == KeyEvent.VK_M) {
+		} else if(keyCode == KeyEvent.VK_M) { // Scroll up (debugging purposes)
 			view.getPanel().scroll(Direction.UP, GameModel.getUnit());
-		} else if((keyCode == KeyEvent.VK_R) && (model.getRobot().getReserves() >= 1)) {
-			if(model.getRobot().getFuelTank().isFull()) {
-				view.addFlyUp("Tank is already full!");
+		} else if(keyCode == KeyEvent.VK_R) {
+			if(model.getRobot().getReserves() >= 1) {
+				if(model.getRobot().getFuelTank().isFull()) {
+					view.addFlyUp("Tank is already full!");
+				} else {
+					model.getRobot().useReserve();
+					model.getRobot().getFuelTank().setFuelLevel(
+							model.getRobot().getFuelTank().getFuelCapacity());
+					view.addFlyUp("Used reserve fuel tank (" + model.getRobot().getReserves() + " left)");
+				}
 			} else {
-				model.getRobot().useReserve();
-				model.getRobot().getFuelTank().setFuelLevel(
-						model.getRobot().getFuelTank().getFuelCapacity());
-				view.addFlyUp("Used reserve fuel tank (" + model.getRobot().getReserves() + " left)");
+				view.addFlyUp("You don't have any reserves!");
 			}
 		} else if(keyCode == KeyEvent.VK_D) {
 			if(model.getRobotLocation().y <= GameModel.GROUND_LEVEL) {
@@ -109,7 +113,11 @@ public class MyKeyListener implements KeyListener {
 								point.y, GameModel.getUnit(), GameModel.getUnit()));
 					}
 				}
-				view.addFlyUp("Used dynamite (" + (model.isInfiniteDynamite()?"Infinity":model.getRobot().getDynamite()) + " left)");
+				if(model.isInfiniteDynamite()) {
+					view.addFlyUp("Used infinite dynamite");
+				} else {
+					view.addFlyUp("Used dynamite (" + model.getRobot().getDynamite() + " left)");
+				}
 			}
 		} else if((keyCode == KeyEvent.VK_ENTER) && (model.getRobot().isDead())) {
 			view.setVisible(false);

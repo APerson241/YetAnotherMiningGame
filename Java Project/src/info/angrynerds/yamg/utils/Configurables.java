@@ -53,6 +53,7 @@ public abstract class Configurables {
 	 * The max dynamite level.
 	 */
 	public static final int MAX_DYNAMITE_LEVEL = 5;
+	public static final Color ROCK_COLOR = Color.BLACK;
 	
 	/**
 	 * @return How big the rectangle announcing that the game is over should be.

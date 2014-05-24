@@ -82,7 +82,7 @@ public class GameView {
 		frame.setJMenuBar(menuBar);
 		frame.getContentPane().add(BorderLayout.SOUTH, statusBar); i();
 		frame.getContentPane().add(BorderLayout.CENTER, panel); i();
-		frame.addKeyListener(new MyKeyListener(yamg, yamg.getModel(), this)); i();
+		frame.addKeyListener(new GamePanelKeyListener(yamg, yamg.getModel(), this)); i();
 		frame.setResizable(false); i();
 		frame.setBounds(Helper.getCenteredBounds(
 				screen.width - 100,

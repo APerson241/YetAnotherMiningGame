@@ -1,5 +1,7 @@
 package info.angrynerds.yamg.robot;
 
+import info.angrynerds.yamg.GameModel;
+
 import java.awt.*;
 import java.io.*;
 
@@ -47,5 +49,11 @@ public class Element implements Serializable {
 			return new Color(138, 90, 170);
 		}
 		return Color.BLUE;
+	}
+	
+	public void paint(Graphics g, int yOff) {
+		g.setColor(getColor());
+		g.fillOval(getLocation().x, getLocation().y + yOff,
+				GameModel.getUnit(), GameModel.getUnit());
 	}
 }

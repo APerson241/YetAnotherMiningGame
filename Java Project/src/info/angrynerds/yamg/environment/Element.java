@@ -1,6 +1,6 @@
-package info.angrynerds.yamg.robot;
+package info.angrynerds.yamg.environment;
 
-import info.angrynerds.yamg.GameModel;
+import info.angrynerds.yamg.engine.GameModel;
 
 import java.awt.*;
 import java.io.*;

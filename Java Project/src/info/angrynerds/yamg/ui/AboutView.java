@@ -3,7 +3,6 @@ package info.angrynerds.yamg.ui;
 import java.awt.*;
 import java.awt.event.*;
 
-import info.angrynerds.yamg.*;
 import info.angrynerds.yamg.utils.*;
 
 import javax.swing.*;
@@ -22,7 +21,7 @@ public class AboutView {
 			frame = new JFrame("About YAMG");
 			mainPanel = new JPanel(new GridLayout(18, 2));
 			mainPanel.setBorder(BorderFactory.createEmptyBorder(5, 10, 5, 10));
-			addRow("Game Version", Yamg.VERSION);
+			addRow("Game Version", Configurables.GAME_VERSION);
 			addRow("Lead Programmer", "Daniel Glus");
 			addRow("Assistant Programmer", "John Lhota");
 			addRow("Game Designer", "Daniel Glus");

@@ -1,6 +1,7 @@
 package info.angrynerds.yamg.robot;
 
-import info.angrynerds.yamg.*;
+import info.angrynerds.yamg.engine.GameModel;
+import info.angrynerds.yamg.environment.Planet;
 import info.angrynerds.yamg.ui.GamePanel;
 import info.angrynerds.yamg.utils.*;
 

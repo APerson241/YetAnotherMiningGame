@@ -1,4 +1,4 @@
-package info.angrynerds.yamg.robot;
+package info.angrynerds.yamg.environment;
 
 public enum ElementType {
 	COPPER(10),

@@ -6,7 +6,7 @@ import java.beans.PropertyChangeEvent;
 import java.beans.PropertyChangeListener;
 import java.util.List;
 
-import info.angrynerds.yamg.GameModel;
+import info.angrynerds.yamg.engine.GameModel;
 import info.angrynerds.yamg.utils.*;
 
 import javax.swing.*;
@@ -14,7 +14,7 @@ import javax.swing.event.ChangeEvent;
 import javax.swing.event.ChangeListener;
 
 /**
- * Along with options, also takes care of cheat codes.
+ * Manages options.
  */
 public class OptionsManager {
 	private JFrame frame;

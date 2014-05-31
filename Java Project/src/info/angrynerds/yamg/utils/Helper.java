@@ -70,7 +70,6 @@ public abstract class Helper {
 					result[i++] = new Point(x, y);
 				}
 			}
-			DebugConsole.getInstance().println("[Helper - getBlastRadius()] i was " + i);
 			return result;
 		} else {
 			return null;

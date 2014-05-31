@@ -4,8 +4,9 @@ import java.awt.*;
 import java.awt.event.*;
 import java.util.*;
 
-import info.angrynerds.yamg.*;
-import info.angrynerds.yamg.robot.*;
+import info.angrynerds.yamg.engine.*;
+import info.angrynerds.yamg.environment.Element;
+import info.angrynerds.yamg.environment.ElementType;
 import info.angrynerds.yamg.robot.Robot;
 import info.angrynerds.yamg.utils.*;
 
@@ -13,7 +14,7 @@ import javax.swing.*;
 
 public class WelcomeView {
 	private JFrame frame;
-	private Yamg yamg;
+	private Launcher yamg;
 	private JPanel centerPanel;
 	private ImagePanel image;
 	
@@ -22,7 +23,7 @@ public class WelcomeView {
 	private StringBuilder stringShownYAMG2 = new StringBuilder();
 	public int tutorialFrame;
 	
-	public WelcomeView(Yamg yamg) {
+	public WelcomeView(Launcher yamg) {
 		this.yamg = yamg;
 	}
 	
@@ -127,7 +128,7 @@ public class WelcomeView {
 			}
 			g.setFont(new Font(Font.SANS_SERIF, Font.PLAIN, 12));
 			g.setColor((status == 3)?Color.BLACK:Color.YELLOW);
-			g.drawString(Yamg.VERSION, 5, image.getHeight() - 10);
+			g.drawString(Configurables.GAME_VERSION, 5, image.getHeight() - 10);
 		}
 
 		private final Dimension CONTINUE_ARROW_SIZE = new Dimension(150, 50);

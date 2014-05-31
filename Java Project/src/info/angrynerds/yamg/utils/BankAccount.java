@@ -3,9 +3,12 @@ package info.angrynerds.yamg.utils;
 import java.beans.*;
 import java.io.Serializable;
 import java.util.*;
+import java.util.logging.Logger;
 
 @SuppressWarnings("serial")
 public class BankAccount implements Serializable {
+	private Logger log = Logger.getGlobal();
+	
 	private int money;
 	
 	private List<PropertyChangeListener> listeners;
@@ -38,18 +41,25 @@ public class BankAccount implements Serializable {
 		if(value >= 0) {
 			notifyPropertyChangeListeners(money, money + value);
 			money += value;
-			DebugConsole.getInstance().println("[BankAccount/deposit()] Deposited " + value);
 		} else {
-			throw new IllegalArgumentException("You can't deposit a negative number of dollars!");
+			IllegalArgumentException ex = new IllegalArgumentException(
+					"You can't deposit a negative number of dollars!");
+			log.throwing(getClass().getSimpleName(), "deposit(int)", ex);
+			throw ex;
 		}
 	}
 	
 	public void withdraw(int value) {
 		if(value < 0) {
-			throw new IllegalArgumentException("You can't withdraw a negative number dollars!");
+			IllegalArgumentException ex = new IllegalArgumentException(
+					"You can't withdraw a negative number of dollars!");
+			log.throwing(getClass().getSimpleName(), "withdraw(int)", ex);
+			throw ex;
 		} else if(value > money) {
-			throw new IllegalArgumentException("You don't have enough money to withdraw " +
-					value + "dollars!");
+			IllegalArgumentException ex = new IllegalArgumentException(
+					"You don't have enough money to withdraw " + value + " dollars!");
+			log.throwing(getClass().getSimpleName(), "withdraw(int)", ex);
+			throw ex;
 		} else {
 			notifyPropertyChangeListeners(money, money - value);
 			money -= value;

@@ -1,10 +1,14 @@
-package info.angrynerds.yamg;
+package info.angrynerds.yamg.engine;
 
 import java.awt.*;
 import java.beans.*;
 import java.io.Serializable;
 import java.util.List;
+import java.util.logging.Logger;
 
+import info.angrynerds.yamg.environment.Element;
+import info.angrynerds.yamg.environment.GravityJob;
+import info.angrynerds.yamg.environment.Planet;
 import info.angrynerds.yamg.robot.*;
 import info.angrynerds.yamg.robot.Robot;
 import info.angrynerds.yamg.ui.*;
@@ -15,10 +19,12 @@ import info.angrynerds.yamg.utils.*;
  */
 @SuppressWarnings("serial")
 public class GameModel implements PropertyChangeListener, Serializable {
+	private Logger log = Logger.getGlobal();
+	
 	private Planet currentPlanet;
 	
 	private Robot robot;
-	private transient Yamg yamg;
+	private transient Launcher yamg;
 	private BankAccount bank;
 	private transient Shop shop;
 	private transient Portal portal;
@@ -47,8 +53,8 @@ public class GameModel implements PropertyChangeListener, Serializable {
 	private static transient int UNIT = Configurables.DEFAULT_UNIT;
 	public static int GROUND_LEVEL = UNIT * 8;
 	
-	public GameModel(Yamg y) {
-		currentPlanet = new Planet(this, "Home", true, Yamg.getFrameBounds().width, Configurables.BOTTOM);
+	public GameModel(Launcher y) {
+		currentPlanet = new Planet(this, "Home", true, Launcher.getFrameBounds().width, Configurables.BOTTOM);
 		portal = new Portal(this);
 		portal.addPlanet(currentPlanet);
 		robot = new Robot();
@@ -182,7 +188,7 @@ public class GameModel implements PropertyChangeListener, Serializable {
 			result &= robot.getLocation().x > 0;
 			break;
 		case RIGHT:
-			result &= robot.getLocation().x < Yamg.getFrameBounds().width - UNIT;
+			result &= robot.getLocation().x < Launcher.getFrameBounds().width - UNIT;
 			break;
 		}
 		result &= !isRockNextToRobot(direction);
@@ -199,7 +205,7 @@ public class GameModel implements PropertyChangeListener, Serializable {
 	}
 
 	public void propertyChange(PropertyChangeEvent evt) {
-		DebugConsole.getInstance().println("[GameModel/propertyChange()] Notified of PropertyChangeEvent");
+		log.entering(getClass().getSimpleName(), "propertyChange(PropertyChangeEvent)");
 		if(CheatManager.getInstance().getMoneyToAdd() > 0) {
 			// If the CheatManager indicates that it wants us to deposit money, then do so...
 			bank.deposit(CheatManager.getInstance().getMoneyToAdd());
@@ -208,7 +214,7 @@ public class GameModel implements PropertyChangeListener, Serializable {
 		}
 	}
 
-	public Yamg getController() {
+	public Launcher getController() {
 		return yamg;
 	}
 

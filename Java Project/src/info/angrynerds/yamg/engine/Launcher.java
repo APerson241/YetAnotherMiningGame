@@ -1,45 +1,51 @@
-package info.angrynerds.yamg;
+package info.angrynerds.yamg.engine;
 
 import java.awt.*;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 import javax.swing.JOptionPane;
 
 import info.angrynerds.yamg.ui.*;
 import info.angrynerds.yamg.utils.*;
 
-public class Yamg {
-	public static final String VERSION = "Alpha Version 1.2.6";
+public class Launcher {
 	
-	private LoadManager load;
 	private GameModel model;
 	private GameView view;
 	private WelcomeView welcome;
 	
+	private Logger log = Logger.getGlobal();
+	
 	public static void main(String[] args) {
+		Launcher launcher = new Launcher();
+		launcher.initializeLogger(); // Couldn't think of anywhere else to put it
 		try {
-			new Yamg().go();
+			launcher.showWelcomeView();
 		} catch(Exception ex) {
 			JOptionPane.showConfirmDialog(null,
 					"There was an error!\n" + ex.getMessage(), "Error!", JOptionPane.ERROR_MESSAGE);
 		}
 	}
 	
-	public void go() {
+	private void initializeLogger() {
+		log.setLevel(Level.ALL);
+		log.addHandler(new DebugConsole());
+	}
+	
+	public void showWelcomeView() {
 		welcome = new WelcomeView(this);
 		welcome.showWindow();
-		DebugConsole.getInstance().println("[Yamg/go()] End of go()");
+		log.exiting(getClass().getSimpleName(), "showWelcomeView()");
 	}
 	
 	public void runApplication() {
 		welcome.hideWindow();
-		load = new LoadManager();
-		load.initialize(13); i();
-		model = new GameModel(this); i();
-		view = new GameView(this, model); i();
+		model = new GameModel(this);
+		view = new GameView(this, model);
 		view.setVisible(true);
+		log.exiting(getClass().getSimpleName(), "runApplication()");
 	}
-	
-	public void i() {load.i();}
 	
 	public static Rectangle getFrameBounds() {
 		Dimension screen = Toolkit.getDefaultToolkit().getScreenSize();

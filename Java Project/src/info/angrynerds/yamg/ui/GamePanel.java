@@ -1,19 +1,22 @@
 package info.angrynerds.yamg.ui;
 
-import info.angrynerds.yamg.*;
-import info.angrynerds.yamg.robot.Element;
+import info.angrynerds.yamg.engine.*;
+import info.angrynerds.yamg.environment.Element;
 import info.angrynerds.yamg.robot.Robot;
 import info.angrynerds.yamg.utils.Configurables;
-import info.angrynerds.yamg.utils.DebugConsole;
 import info.angrynerds.yamg.utils.Direction;
 import info.angrynerds.yamg.utils.Helper;
 
 import java.awt.*;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 import javax.swing.*;
 
 @SuppressWarnings("serial")
 public class GamePanel extends JPanel {
+	Logger log = Logger.getGlobal();
+	
 	/**
 	 * How big the client window is
 	 */
@@ -39,7 +42,7 @@ public class GamePanel extends JPanel {
 		// Version
 		g.setFont(new Font(Font.SANS_SERIF, Font.PLAIN, 12));
 		g.setColor(Color.WHITE);
-		g.drawString(Yamg.VERSION, 5, getHeight() - 10);
+		g.drawString(Configurables.GAME_VERSION, 5, getHeight() - 10);
 		// Money
 		g.setFont(new Font(Font.SANS_SERIF, Font.BOLD, 24));
 		g.setColor(new Color(0, underground?255:0, 0, 128));
@@ -148,27 +151,27 @@ public class GamePanel extends JPanel {
 		g.drawString("Press ENTER to restart!", (this.getWidth() - 615)/2, calcY + yOff);
 	}
 
-	public void scroll(Direction up, int i) {
-		switch(up) {
+	public void scroll(Direction direction, int i) {
+		switch(direction) {
 		case UP:
 			if(yOffset >= -4600) {
 				yOffset -= i; 
 			} else {
-				DebugConsole.getInstance().println(
-						"[GameView/canScroll()] Can't scroll up any more");
+				log.logp(Level.WARNING, getClass().getSimpleName(), "scroll(Direction, int)",
+						"Can't scroll up any more");
 			}
 			break;
 		case DOWN:
 			if(yOffset < 0) {
 				yOffset += i;
 			} else {
-				DebugConsole.getInstance().println(
-						"[GameView/canScroll()] Can't scroll down any more");
+				log.logp(Level.WARNING, getClass().getSimpleName(), "scroll(Direction, int)",
+						"Can't scroll down any more");
 			}
 			break;
 		default:
-			DebugConsole.getInstance().println(
-					"[GameView/canScroll()] Invalid scroll direction: " + up.toString());
+			log.logp(Level.WARNING, getClass().getSimpleName(), "scroll(Direction, int)",
+					"Invalid scroll direction: " + direction.toString());
 			break;
 		}
 	}

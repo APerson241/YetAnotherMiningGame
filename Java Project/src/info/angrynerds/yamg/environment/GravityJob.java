@@ -1,5 +1,6 @@
-package info.angrynerds.yamg;
+package info.angrynerds.yamg.environment;
 
+import info.angrynerds.yamg.engine.GameModel;
 import info.angrynerds.yamg.utils.Direction;
 
 import java.awt.*;

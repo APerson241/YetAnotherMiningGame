@@ -1,7 +1,7 @@
 package info.angrynerds.yamg.ui;
 
-import info.angrynerds.yamg.*;
-import info.angrynerds.yamg.robot.Element;
+import info.angrynerds.yamg.engine.*;
+import info.angrynerds.yamg.environment.Element;
 import info.angrynerds.yamg.utils.*;
 
 import java.awt.*;
@@ -11,13 +11,13 @@ public class GamePanelKeyListener implements KeyListener {
 	private GameModel model;
 	private GameView view;
 	
-	public GamePanelKeyListener(Yamg y, GameModel gm, GameView gv) {
+	public GamePanelKeyListener(Launcher y, GameModel gm, GameView gv) {
 		model = gm;
 		view = gv;
 	}
 
 	/**
-	 * The {@link info.angrynerds.yamg.GameModel GameModel} makes the final decision on whether
+	 * The {@link info.angrynerds.yamg.engine.GameModel GameModel} makes the final decision on whether
 	 * or not the robot is able to move after this method tests whether or not the view is
 	 * locked.
 	 */
@@ -57,7 +57,6 @@ public class GamePanelKeyListener implements KeyListener {
 		}
 		if(model.getRobotLocation().y >= GameModel.GROUND_LEVEL) {	// We should add a hole.
 			model.addHole(model.getRobotLocation());
-			DebugConsole.getInstance().println("Added hole: " + model.getRobot().getLocation());
 		}
 		if(model.getShop().getBounds().intersects(model.getRobotRect())) {
 			view.getFlyups().setPermanentFlyUp("Press S to open Shop");
@@ -121,7 +120,7 @@ public class GamePanelKeyListener implements KeyListener {
 			}
 		} else if((keyCode == KeyEvent.VK_ENTER) && (model.getRobot().isDead())) {
 			view.setVisible(false);
-			Yamg controller = model.getController();
+			Launcher controller = model.getController();
 			controller.runApplication();
 		}
 	}

@@ -1,12 +1,15 @@
-package info.angrynerds.yamg;
+package info.angrynerds.yamg.environment;
 
-import info.angrynerds.yamg.robot.*;
-import info.angrynerds.yamg.utils.DebugConsole;
+import info.angrynerds.yamg.engine.GameModel;
+import info.angrynerds.yamg.engine.Launcher;
 
-import java.awt.*;
+import java.awt.Dimension;
+import java.awt.Point;
+import java.awt.Rectangle;
 import java.io.Serializable;
-import java.util.*;
+import java.util.ArrayList;
 import java.util.List;
+import java.util.Random;
 
 /**
  * A planet is a game world.
@@ -103,7 +106,6 @@ public class Planet implements Serializable {
 	}
 
 	public int getBOTTOM() {
-		DebugConsole.getInstance().println("[Planet.getBOTTOM()] BOTTOM = " + SIZE.height);
 		return SIZE.height;
 	}
 	
@@ -193,7 +195,7 @@ public class Planet implements Serializable {
 	
 	public static int getStandardWidth() {
 		if (width == -1) {
-			int x = Yamg.getFrameBounds().width;
+			int x = Launcher.getFrameBounds().width;
 			x -= (x % GameModel.getUnit());
 			width = x;
 		}

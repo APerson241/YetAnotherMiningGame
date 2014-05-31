@@ -1,8 +1,7 @@
 package info.angrynerds.yamg.robot;
 
-import info.angrynerds.yamg.GameModel;
+import info.angrynerds.yamg.engine.GameModel;
 import info.angrynerds.yamg.utils.Configurables;
-import info.angrynerds.yamg.utils.DebugConsole;
 import info.angrynerds.yamg.utils.Helper;
 
 import java.awt.*;
@@ -306,7 +305,6 @@ public class Shop {
 				} else if(button.getText().equals(s.unlockPortalButton.getText())) {
 					model.getBankAccount().withdraw(20000);
 					model.HAS_PORTAL = true;
-					DebugConsole.getInstance().println("[Shop/ButtonListener/actionPerformed] PORTAL.");
 				}
 				model.doRefresh();
 			} else if(arg0.getSource() instanceof JComboBox) {

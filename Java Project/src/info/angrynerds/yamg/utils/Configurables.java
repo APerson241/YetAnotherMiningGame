@@ -4,10 +4,12 @@ import java.awt.*;
 
 /**
  * Where we put all the "magic numbers" (and strings, and whatever).
- * @author Daniel Glus
- * @version 0.5
  */
 public abstract class Configurables {
+	/**
+	 * Game version.
+	 */
+	public static final String GAME_VERSION = "Alpha Version 1.2.7";
 	/**
 	 * The amount of money you start with.
 	 */
@@ -58,5 +60,5 @@ public abstract class Configurables {
 	/**
 	 * @return How big the rectangle announcing that the game is over should be.
 	 */
-	public static Dimension GAME_OVER_SCREEN() { return new Dimension(800, 200); }
+	public static final Dimension GAME_OVER_SCREEN_SIZE = new Dimension(800, 200);
 }

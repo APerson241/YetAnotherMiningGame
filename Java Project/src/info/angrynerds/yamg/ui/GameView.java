@@ -1,18 +1,22 @@
 package info.angrynerds.yamg.ui;
 
-import info.angrynerds.yamg.*;
+import info.angrynerds.yamg.engine.*;
 import info.angrynerds.yamg.utils.*;
 
 import java.awt.*;
 import java.awt.event.*;
 import java.io.*;
 import java.util.Date;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 import javax.swing.*;
 import javax.swing.filechooser.FileNameExtensionFilter;
 
 public class GameView {
-	private Yamg yamg;
+	private Logger log = Logger.getGlobal();
+	
+	private Launcher yamg;
 	private AboutView aboutView;
 	
 	private JFrame frame;
@@ -28,20 +32,16 @@ public class GameView {
 
 	private boolean autoscroll = true;
 	
-	public GameView(Yamg yam, GameModel model) {
+	public GameView(Launcher yam, GameModel model) {
 		yamg = yam;
 		this.model = model;
 	}
 	
-	public void i() {
-		yamg.i();
-	}
-	
 	private void buildGUI() {
-		Dimension screen = Toolkit.getDefaultToolkit().getScreenSize(); i();
-		frame = new JFrame("Yet Another Mining Game"); i();
+		Dimension screen = Toolkit.getDefaultToolkit().getScreenSize();
+		frame = new JFrame("Yet Another Mining Game");
 		panel = new GamePanel(new Dimension((screen.width - 100), screen.height - 100),
-				model, flyups); i();
+				model, flyups);
 		panel.addMouseListener(new PanelClickListener());
 		statusBar = new JLabel(getStatusBarText());
 		aboutView = new AboutView();
@@ -79,14 +79,14 @@ public class GameView {
 			helpMenu.add(aboutMenuItem);
 		menuBar.add(helpMenu);
 		frame.setJMenuBar(menuBar);
-		frame.getContentPane().add(BorderLayout.SOUTH, statusBar); i();
-		frame.getContentPane().add(BorderLayout.CENTER, panel); i();
-		frame.addKeyListener(new GamePanelKeyListener(yamg, yamg.getModel(), this)); i();
-		frame.setResizable(false); i();
+		frame.getContentPane().add(BorderLayout.SOUTH, statusBar);
+		frame.getContentPane().add(BorderLayout.CENTER, panel);
+		frame.addKeyListener(new GamePanelKeyListener(yamg, yamg.getModel(), this));
+		frame.setResizable(false);
 		frame.setBounds(Helper.getCenteredBounds(
 				screen.width - 100,
-				screen.height - 100)); i();
-		frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE); i();
+				screen.height - 100));
+		frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 		refreshView();
 		setRefreshing(true);
 	}
@@ -117,7 +117,7 @@ public class GameView {
 	
 	public void refreshView() {
 		if(OptionsManager.getInstance().isNotifyViewRefresh()) {
-			DebugConsole.getInstance().println("[GameView/refreshView()] Refreshing view...");
+			log.logp(Level.FINEST, getClass().getSimpleName(), "refreshView()", "Refreshing...");
 		}
 		panel.repaint();
 		statusBar.setText(getStatusBarText());
@@ -169,8 +169,7 @@ public class GameView {
 		case UP:
 			return robot.y >= (bottomBorder - 50);
 		default:
-			DebugConsole.getInstance().println(
-					"[GameView/canScroll()] Invalid scroll direction: " + scrollDirection.toString());
+			// It's only ever supposed to be scrolling up or down
 			break;
 		}
 		return false;
@@ -214,7 +213,7 @@ public class GameView {
 						FileInputStream fs = new FileInputStream(file);
 						ObjectInputStream is = new ObjectInputStream(fs);
 						model.getView().setVisible(false);
-						Yamg controller = model.getController();
+						Launcher controller = model.getController();
 						controller.runApplication();
 						model = (GameModel) is.readObject();
 						is.close();
@@ -227,10 +226,10 @@ public class GameView {
 					}
 				} else if(item.getText().equals("New Game")) {
 					model.getView().setVisible(false);
-					Yamg controller = model.getController();
+					Launcher controller = model.getController();
 					controller.runApplication();
 				} else if(item.getText().equals("Toggle debug window")) {
-					DebugConsole.getInstance().toggleVisible();
+					((DebugConsole)log.getHandlers()[0]).toggleVisible();
 				}
 			}
 			model.doRefresh();
@@ -242,8 +241,8 @@ public class GameView {
 		public void mouseEntered(MouseEvent arg0) {}
 		public void mouseExited(MouseEvent arg0) {}
 		public void mousePressed(MouseEvent arg0) {
-			DebugConsole.getInstance().println(
-					"[GameView/PanelClickListener/mousePressed()] " + arg0.getPoint());
+			log.logp(Level.FINER, getClass().getSimpleName(), "mousePressed(MouseEvent)",
+					arg0.getPoint().toString());
 			if(model.getPortal().isVisible()) {
 				model.getPortal().mouseClick(arg0.getPoint());
 			} else if(CheatManager.getInstance().isVisible()) {
@@ -261,7 +260,6 @@ public class GameView {
 		public void run() {
 			while(isRefreshing) {
 				if(!OptionsManager.getInstance().isRefresh()) {
-					DebugConsole.getInstance().println("[GameView/RefreshJob/run()] BREAK!");
 					isRefreshing = false;
 					refreshView();
 				}
